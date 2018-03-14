@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MP.h"
+#include "sqlite3.h"
 #include <string>
 
 namespace testCLR {
@@ -19,7 +20,9 @@ namespace testCLR {
 	{
 	public:  
 		bool playing = 0;
+		bool mute = 0;
 		int playingSongIndex;
+		int soundTrackBarIndex;
 	private: System::Windows::Forms::DataGridView^  dataGridView1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column2;
@@ -29,6 +32,10 @@ namespace testCLR {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column6;
 	private: System::Windows::Forms::Label^  label3;
 	private: System::Windows::Forms::Label^  label4;
+	private: System::Windows::Forms::Button^  button7;
+	private: System::Windows::Forms::Button^  button8;
+	private: System::Windows::Forms::Button^  button9;
+	private: System::Windows::Forms::Button^  button10;
 	public:
 		float currentTime = 0;
 		MyForm(void)
@@ -42,6 +49,8 @@ namespace testCLR {
 			//OpenFile("C:/Users/User/Desktop/08_piece_of_cake.wav");
 			//SelectMusic("C:/Users/User/Desktop/08_piece_of_cake.wav");
 			//playing = 1;
+
+			soundTrackBarIndex = trackBar2->Value;
 			
 			dataGridView1->Rows->Add("piece of cake", "shiho x rika", "idolm@ster", "4:20", "offline", "C:/Users/User/Desktop/08_piece_of_cake.wav");
 			dataGridView1->Rows->Add("sweet sweet soul", "serika x akane x tamaki", "idolm@ster", "4:53", "offline", "C:/Users/User/Desktop/Sweet_Sweet_Soul.wav");
@@ -61,6 +70,25 @@ namespace testCLR {
 			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
 			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
 			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
+		
+			sqlite3 *db;
+			int rc = sqlite3_open("MyDb.db", &db);
+
+			if (rc)
+			{
+				sqlite3_close(db);
+
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"Error opening SQLite3 database\n");
+				OutputDebugString(buf);
+			}
+			else
+			{
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"Error opening SQLite3 database\n");
+				OutputDebugString(buf);
+			}
+
 		}
 
 	protected:
@@ -121,6 +149,10 @@ namespace testCLR {
 			this->Column6 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
+			this->button7 = (gcnew System::Windows::Forms::Button());
+			this->button8 = (gcnew System::Windows::Forms::Button());
+			this->button9 = (gcnew System::Windows::Forms::Button());
+			this->button10 = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
@@ -136,7 +168,6 @@ namespace testCLR {
 			this->label1->Size = System::Drawing::Size(109, 27);
 			this->label1->TabIndex = 0;
 			this->label1->Text = L"songTitle";
-			this->label1->Click += gcnew System::EventHandler(this, &MyForm::label1_Click);
 			// 
 			// label2
 			// 
@@ -168,6 +199,7 @@ namespace testCLR {
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(62, 62);
 			this->button1->TabIndex = 3;
+			this->button1->TabStop = false;
 			this->button1->UseVisualStyleBackColor = false;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::Previous_Click);
 			// 
@@ -180,6 +212,7 @@ namespace testCLR {
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(62, 62);
 			this->button2->TabIndex = 4;
+			this->button2->TabStop = false;
 			this->button2->UseVisualStyleBackColor = false;
 			this->button2->Click += gcnew System::EventHandler(this, &MyForm::Play_Click);
 			// 
@@ -192,6 +225,7 @@ namespace testCLR {
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(62, 62);
 			this->button3->TabIndex = 5;
+			this->button3->TabStop = false;
 			this->button3->UseVisualStyleBackColor = false;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::Next_Click);
 			// 
@@ -201,23 +235,29 @@ namespace testCLR {
 			this->trackBar1->Name = L"trackBar1";
 			this->trackBar1->Size = System::Drawing::Size(315, 45);
 			this->trackBar1->TabIndex = 6;
+			this->trackBar1->TabStop = false;
 			// 
 			// button4
 			// 
-			this->button4->Location = System::Drawing::Point(1101, 12);
+			this->button4->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button4.BackgroundImage")));
+			this->button4->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button4->Location = System::Drawing::Point(1105, 12);
 			this->button4->Name = L"button4";
-			this->button4->Size = System::Drawing::Size(75, 23);
+			this->button4->Size = System::Drawing::Size(30, 30);
 			this->button4->TabIndex = 7;
-			this->button4->Text = L"Volume";
+			this->button4->TabStop = false;
 			this->button4->UseVisualStyleBackColor = true;
 			this->button4->Click += gcnew System::EventHandler(this, &MyForm::Volume_Click);
 			// 
 			// trackBar2
 			// 
-			this->trackBar2->Location = System::Drawing::Point(1172, 12);
+			this->trackBar2->Location = System::Drawing::Point(1136, 12);
 			this->trackBar2->Name = L"trackBar2";
-			this->trackBar2->Size = System::Drawing::Size(104, 45);
+			this->trackBar2->Size = System::Drawing::Size(140, 45);
 			this->trackBar2->TabIndex = 8;
+			this->trackBar2->TabStop = false;
+			this->trackBar2->Value = 10;
+			this->trackBar2->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::Volume_Select);
 			// 
 			// button5
 			// 
@@ -227,6 +267,7 @@ namespace testCLR {
 			this->button5->Name = L"button5";
 			this->button5->Size = System::Drawing::Size(40, 40);
 			this->button5->TabIndex = 9;
+			this->button5->TabStop = false;
 			this->button5->UseVisualStyleBackColor = true;
 			this->button5->Click += gcnew System::EventHandler(this, &MyForm::Backward_Click);
 			// 
@@ -238,6 +279,7 @@ namespace testCLR {
 			this->button6->Name = L"button6";
 			this->button6->Size = System::Drawing::Size(40, 40);
 			this->button6->TabIndex = 10;
+			this->button6->TabStop = false;
 			this->button6->UseVisualStyleBackColor = true;
 			this->button6->Click += gcnew System::EventHandler(this, &MyForm::Forward_Click);
 			// 
@@ -259,6 +301,7 @@ namespace testCLR {
 			this->dataGridView1->SelectionMode = System::Windows::Forms::DataGridViewSelectionMode::FullRowSelect;
 			this->dataGridView1->Size = System::Drawing::Size(850, 230);
 			this->dataGridView1->TabIndex = 11;
+			this->dataGridView1->TabStop = false;
 			this->dataGridView1->CellDoubleClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::Table_Select);
 			// 
 			// Column1
@@ -315,11 +358,64 @@ namespace testCLR {
 			this->label4->TabIndex = 13;
 			this->label4->Text = L"SongLength";
 			// 
+			// button7
+			// 
+			this->button7->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button7.BackgroundImage")));
+			this->button7->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button7->Location = System::Drawing::Point(1069, 12);
+			this->button7->Name = L"button7";
+			this->button7->Size = System::Drawing::Size(30, 30);
+			this->button7->TabIndex = 14;
+			this->button7->TabStop = false;
+			this->button7->UseVisualStyleBackColor = true;
+			this->button7->Visible = false;
+			// 
+			// button8
+			// 
+			this->button8->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button8.BackgroundImage")));
+			this->button8->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button8->Location = System::Drawing::Point(1033, 12);
+			this->button8->Name = L"button8";
+			this->button8->Size = System::Drawing::Size(30, 30);
+			this->button8->TabIndex = 15;
+			this->button8->TabStop = false;
+			this->button8->UseVisualStyleBackColor = true;
+			this->button8->Visible = false;
+			// 
+			// button9
+			// 
+			this->button9->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button9.BackgroundImage")));
+			this->button9->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button9->Location = System::Drawing::Point(997, 12);
+			this->button9->Name = L"button9";
+			this->button9->Size = System::Drawing::Size(30, 30);
+			this->button9->TabIndex = 16;
+			this->button9->TabStop = false;
+			this->button9->UseVisualStyleBackColor = true;
+			this->button9->Visible = false;
+			// 
+			// button10
+			// 
+			this->button10->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
+			this->button10->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button10->Location = System::Drawing::Point(961, 12);
+			this->button10->Name = L"button10";
+			this->button10->Size = System::Drawing::Size(30, 30);
+			this->button10->TabIndex = 17;
+			this->button10->TabStop = false;
+			this->button10->UseVisualStyleBackColor = true;
+			this->button10->Visible = false;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->ClientSize = System::Drawing::Size(1284, 461);
+			this->Controls->Add(this->button10);
+			this->Controls->Add(this->button9);
+			this->Controls->Add(this->button8);
+			this->Controls->Add(this->button7);
 			this->Controls->Add(this->label4);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->dataGridView1);
@@ -345,9 +441,8 @@ namespace testCLR {
 
 		}
 #pragma endregion
-	private: System::Void label1_Click(System::Object^  sender, System::EventArgs^  e) {
-	}
 	private: System::Void Play_Click(System::Object^  sender, System::EventArgs^  e) {
+		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 		if (playing) {
 			playing = 0;
 			currentTime = GetCurrentPlaybackTime();
@@ -355,6 +450,8 @@ namespace testCLR {
 			wchar_t buf[100];
 			swprintf_s(buf, 100, L"stopped, Current Time Now %f\n", currentTime);
 			OutputDebugString(buf);
+
+			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button9.BackgroundImage")));
 			
 			PauseMusic();
 			//ClosePlayer();			
@@ -365,6 +462,9 @@ namespace testCLR {
 			wchar_t buf[100];
 			swprintf_s(buf, 100, L"playing, Current Time Now %f\n", currentTime);
 			OutputDebugString(buf);
+
+			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
+
 
 			RestartMusic();
 			//Playback(currentTime);
@@ -383,15 +483,27 @@ namespace testCLR {
 		SkipSecond(-10000);
 		currentTime = GetCurrentPlaybackTime();
 
-
-
 		wchar_t buf[100];
 		swprintf_s(buf, 100, L"10s forward, Current Time Now %f\n", currentTime);
 		OutputDebugString(buf);
 	}
 	private: System::Void Volume_Click(System::Object^  sender, System::EventArgs^  e) {
+		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+		if (mute) {
+			trackBar2->Value = soundTrackBarIndex;
+			mute = 0;			
+			button4->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button7.BackgroundImage")));
+		}
+		else {
+			trackBar2->Value = 0;
+			mute = 1;
+			button4->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button8.BackgroundImage")));
+		}
 
-		//max:ffff min:0
+		int soundValue = trackBar2->Value * 6553;
+		unsigned short value = (unsigned short)soundValue;
+
+		SetVolume(value, value);
 		
 	}	
 	//converting String^ to char*
@@ -422,24 +534,11 @@ namespace testCLR {
 		SelectMusic(songPath.c_str()); // convert string to char*
 		playing = 1;
 
-		System::String^ selectedSongTitle;
-		selectedSongTitle = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[0]->Value->ToString();
-		label1->Text = selectedSongTitle;
+		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+		button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
 
-		System::String^ selectedSongArtist;
-		selectedSongArtist = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[1]->Value->ToString();
-		label2->Text = selectedSongArtist;
 
-		int selectedSongDuration = GetTotalDuration()/1000;
-		int minute = selectedSongDuration / 60;
-		int second = selectedSongDuration % 60;
-		//int to string^
-		string songDuration = std::to_string(minute) + ":" + std::to_string(second);
-		System::String^ strNew = gcnew String(songDuration.c_str());
-
-		label4->Text = strNew;
-
-		
+		updateSongInfo();
 	}
 
 	private: System::Void Next_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -452,8 +551,14 @@ namespace testCLR {
 		SelectMusic(songPath.c_str()); // convert string to char*
 		playing = 1;
 
+		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+		button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
+
 		dataGridView1->CurrentCell = dataGridView1->Rows[playingSongIndex]->Cells[0];
+
+		updateSongInfo();
 	}
+
 	private: System::Void Previous_Click(System::Object^  sender, System::EventArgs^  e) {
 		playingSongIndex--;
 
@@ -464,7 +569,53 @@ namespace testCLR {
 		SelectMusic(songPath.c_str()); // convert string to char*
 		playing = 1;
 
+		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+		button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
+
 		dataGridView1->CurrentCell = dataGridView1->Rows[playingSongIndex]->Cells[0];
+
+		updateSongInfo();
+	}
+
+	private: void updateSongInfo() {
+		System::String^ selectedSongTitle;
+		selectedSongTitle = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[0]->Value->ToString();
+		label1->Text = selectedSongTitle;
+
+		System::String^ selectedSongArtist;
+		selectedSongArtist = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[1]->Value->ToString();
+		label2->Text = selectedSongArtist;
+
+		int selectedSongDuration = GetTotalDuration() / 1000;
+		int minute = selectedSongDuration / 60;
+		int second = selectedSongDuration % 60;
+		//int to string^
+		string songDuration = std::to_string(minute) + ":" + std::to_string(second);
+		System::String^ strNew = gcnew String(songDuration.c_str());
+
+		label4->Text = strNew;
+	}
+	private: System::Void Volume_Select(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+		soundTrackBarIndex = trackBar2->Value; 
+		int soundValue = trackBar2->Value * 6553;
+
+		/*
+		std::string hex = "0123456789ABCDEF";
+		std::string res;
+		while (soundValue > 0)
+		{
+			res = hex[soundValue % 16] + res;
+			soundValue /= 16;
+		}
+		string value = "0x" + std::to_string(soundValue);
+		*/
+		unsigned short value = (unsigned short)soundValue;
+
+		SetVolume(value, value);
+
+		wchar_t buf[100];
+		swprintf_s(buf, 100, L"trackBar: %hu\n", value);
+		OutputDebugString(buf);
 	}
 };
 }
