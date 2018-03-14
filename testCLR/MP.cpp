@@ -27,14 +27,21 @@ int InitMusicPlayer() {
 	hWaveOut = NULL;
 	waitEvent = CreateEvent(NULL, 0, 0, NULL);
 	fp = NULL;
-	//soundData = NULL;
 	fileSize = 0;
 	playerState = PREPARING;
 	currentFilePath[0] = '\0';
+	currentPlaybackTime = 0;
 	return 0;
 }
 
 int GetCurrentPlaybackTime() {
+	if (playerState == PLAYING) {
+		return currentPlaybackTime + GetCurrentPlaybackTimeFromStartPoint();
+	}
+	return currentPlaybackTime;
+}
+
+int GetCurrentPlaybackTimeFromStartPoint() {
 	if (hWaveOut == NULL) {
 		return -1;
 	}
@@ -42,9 +49,6 @@ int GetCurrentPlaybackTime() {
 	mmtime.wType = TIME_SAMPLES;
 	MMRESULT ret = waveOutGetPosition(hWaveOut, &mmtime, sizeof(MMTIME));
 	int result = (float)mmtime.u.sample / waveFormat.nSamplesPerSec * 1000;
-	/*wchar_t buf[100];
-	swprintf_s(buf, 100, L"time %f\n", result);
-	OutputDebugString(buf);*/
 	return result;
 }
 
@@ -52,7 +56,7 @@ int GetTotalDuration() {
 	if (fp == NULL) {
 		return -1;
 	}
-	int result = (float)(fileSize - 44) / waveFormat.nAvgBytesPerSec * 1000;
+	int result = round((float)(fileSize - 44) / waveFormat.nAvgBytesPerSec * 1000);
 	return result;
 }
 
@@ -185,7 +189,7 @@ int PauseMusic() {
 	playerState = PAUSED;
 	}
 	return result;*/
-	currentPlaybackTime += GetCurrentPlaybackTime();
+	currentPlaybackTime += GetCurrentPlaybackTimeFromStartPoint();
 	playerState = PAUSED;
 	HANDLE t1 = OpenThread(THREAD_ALL_ACCESS, false, t_addBufferId);
 	HANDLE t2 = OpenThread(THREAD_ALL_ACCESS, false, t_playBufferId);
@@ -227,7 +231,7 @@ int RestartMusic() {
 int SkipSecond(int millisecond) {
 	if (playerState == PLAYING) {
 		//PauseMusic();
-		int newPlaybackTime = millisecond + currentPlaybackTime + GetCurrentPlaybackTime();
+		int newPlaybackTime = millisecond + currentPlaybackTime + GetCurrentPlaybackTimeFromStartPoint();
 		if (newPlaybackTime < 0 || newPlaybackTime >= GetTotalDuration()) {
 			return 1;
 		}
@@ -272,17 +276,15 @@ int CloseMusicPlayer() {
 }
 
 int Playback(int millisecond) {
-	/*HANDLE _t1 = OpenThread(THREAD_ALL_ACCESS, false, t_addBufferId);
-	HANDLE _t2 = OpenThread(THREAD_ALL_ACCESS, false, t_playBufferId);
-	HANDLE _t3 = OpenThread(THREAD_ALL_ACCESS, false, t_dumpBufferId);
-	if (_t1 != NULL || _t2 != NULL || _t3 != NULL) {
-	return 1;
-	}*/
 	if (fp == NULL) {
 		return 1;
 	}
+	wchar_t buf[100];
+	
 	currentPlaybackTime = millisecond;
 	startOffset = waveFormat.nAvgBytesPerSec * (millisecond / 1000.0) + 44;
+	// ensure that the sound starts at even offset
+	startOffset = (startOffset % 2 == 0) ? startOffset : startOffset - 1;
 	endOffset = fileSize;
 	if (startOffset >= endOffset) {
 		return 1;
@@ -296,18 +298,9 @@ int Playback(int millisecond) {
 
 	playerState = PREPARING;
 
-	//Thread^ T1 = gcnew Thread(gcnew ThreadStart(AddWavToBuffer));
-	//Thread^ T2 = gcnew Thread(gcnew ThreadStart(PlayWavFromBuffer));
-	//Thread^ T3 = gcnew Thread(gcnew ThreadStart(DumpSoundData));
-	//T1->Start();
-	//T2->Start();
-	//T3->Start();
 	HANDLE t1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AddWavToBuffer, NULL, 0, &t_addBufferId);
 	HANDLE t2 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)PlayWavFromBuffer, NULL, 0, &t_playBufferId);
 	HANDLE t3 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)DumpSoundData, NULL, 0, &t_dumpBufferId);
-	//CloseHandle(t_addBuffer);
-	//CloseHandle(t_playBuffer);
-	//CloseHandle(t_dumpBuffer);
 
 	return 0;
 }
@@ -337,27 +330,22 @@ void AddWavToBuffer() {
 		}
 		WaveFileBlock wfb;
 		memset(&wfb.header, 0, sizeof(WAVEHDR));
-		//wfb.data = new char[bufLen];
 		char* data = new char[bufLen];
 		fseek(fp, curOffset, SEEK_SET);
 		fread(data, bufLen, sizeof(char), fp);
-		//memcpy(data, soundData + curOffset, bufLen);
 		curOffset += MAX_BUFFER_SIZE;
 		wfb.header.lpData = data;
 		wfb.header.dwBufferLength = bufLen;
 		wfb.header.dwFlags = 0L;
 		wfb.header.dwLoops = 1L;
-		//wfb.state = WAITING;
 		bufferQueue.push_back(wfb);
-		//bufLock.unlock();
-		//bufCond.notify_all();'
 		if (playerState == PAUSED) {
 			break;
 		}
 	}
 	if (playerState == PAUSED) {
 		//...
-		wchar_t buf[100];
+		//wchar_t buf[100];
 		//swprintf_s(buf, 100, L"add buf: size of queue %d\n", bufferQueue.size());
 		//OutputDebugString(buf);
 		return;
@@ -385,23 +373,7 @@ void PlayWavFromBuffer() {
 		while (bufferQueue.size() == 0) {
 			Thread::Sleep(10);
 		}
-		//cout << "play buffer " << i << '\n';
-		//unique_lock<mutex> bufLock(bufferMut);
-		//bufCond.wait(bufLock, [this] { return bufferQueue.size() > 0; });
 		WaveFileBlock wfb = bufferQueue.front();
-		/*cout << "Play Wav\n";
-		bufferQueue.front().state = PLAYING;
-		bufLock.unlock();
-		bufCond.notify_all();
-		unique_lock<mutex> playLock(playMut);
-		playCond.wait(playLock, [this] { return playerState == DONE; });
-		cout << "Can play wave\n";
-		waveOutPrepareHeader(hWaveOut, &wfb.header, sizeof(WAVEHDR));
-		waveOutWrite(hWaveOut, &wfb.header, sizeof(WAVEHDR));
-		playerState = PLAYING;
-		playLock.unlock();
-		playCond.notify_all();*/
-
 		waveOutPrepareHeader(hWaveOut, &wfb.header, sizeof(WAVEHDR));
 		waveOutWrite(hWaveOut, &wfb.header, sizeof(WAVEHDR));
 
@@ -439,7 +411,7 @@ void PlayWavFromBuffer() {
 	}
 	if (playerState == PAUSED) {
 		int x = waveOutReset(hWaveOut);
-		wchar_t buf[100];
+		//wchar_t buf[100];
 		//swprintf_s(buf, 100, L"play buf: size of queue %d\n", bufferQueue.size());
 		//OutputDebugString(buf);
 		while (bufferQueue.size() > 0) {
@@ -457,32 +429,6 @@ void PlayWavFromBuffer() {
 }
 
 void DumpSoundData() {
-	/*DWORD len = endOffset - startOffset;
-	DWORD count = 0, n = len / MAX_BUFFER_SIZE;
-	while (true) {
-	if (dumpSoundDataQueue.size() > 0) {
-	if (dumpSoundDataQueue.size() == 1) {
-	// wait some time before the data finishes playing
-	Sleep(1000.0 * MAX_BUFFER_SIZE / waveFormat.nAvgBytesPerSec);
-	if (playerState != FINISHED) {
-	continue;
-	}
-	}
-	delete dumpSoundDataQueue.front();
-	wchar_t buf[100];
-	//swprintf_s(buf, 100, L"dump data: %d\n", count + 1);
-	//OutputDebugString(buf);
-	dumpSoundDataQueue.pop_front();
-	count++;
-	}
-	if (count >= n + 1 || playerState == FINISHED) {
-	break;
-	}
-	}
-	while (dumpSoundDataQueue.size() > 0) {
-	delete dumpSoundDataQueue.front();
-	dumpSoundDataQueue.pop_front();
-	}*/
 	while (true) {
 		if (playerState == PAUSED || playerState == FINISHED) {
 			break;
@@ -498,6 +444,11 @@ void DumpSoundData() {
 		else {
 			Thread::Sleep(100);
 		}
+	}
+	// wait until play buffer end to clear all sound data
+	HANDLE t2 = OpenThread(THREAD_ALL_ACCESS, false, t_playBufferId);
+	if (t2 != NULL) {
+		WaitForSingleObject(t2, 10000);
 	}
 	while (dumpSoundDataQueue.size() > 0) {
 		char *data = dumpSoundDataQueue.front();
