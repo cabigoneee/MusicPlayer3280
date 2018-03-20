@@ -51,28 +51,14 @@ namespace testCLR {
 			//playing = 1;
 
 			soundTrackBarIndex = trackBar2->Value;
-			
+			/*
 			dataGridView1->Rows->Add("piece of cake", "shiho x rika", "idolm@ster", "4:20", "offline", "C:/Users/User/Desktop/08_piece_of_cake.wav");
 			dataGridView1->Rows->Add("sweet sweet soul", "serika x akane x tamaki", "idolm@ster", "4:53", "offline", "C:/Users/User/Desktop/Sweet_Sweet_Soul.wav");
 			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana lkdsjflk asjdlfjalskdjflkasjdfl", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav"); 
-			dataGridView1->Rows->Add("no curry no life", "anna x rio x kana", "idolm@ster", "3:59", "offline", "C:/Users/User/Desktop/NO_CURRY_NO_LIFE.wav");
-		
+			*/
 			sqlite3 *db;
-			int rc = sqlite3_open("MyDb.db", &db);
+			int rc = sqlite3_open("songDB.db", &db);
+			char *error;
 
 			if (rc)
 			{
@@ -85,11 +71,95 @@ namespace testCLR {
 			else
 			{
 				wchar_t buf[100];
-				swprintf_s(buf, 100, L"Error opening SQLite3 database\n");
+				swprintf_s(buf, 100, L"Opened songDB.db.\n");
 				OutputDebugString(buf);
 			}
+			/*
+			// Execute SQL
+			cout << "Inserting a value into MyTable ..." << endl;
+			const char *sqlInsert = "INSERT INTO Song VALUES(NULL, 'Piece of Cake', 'shino', 'idol', '4:59', 'offline', 'C:/Users/User/Desktop/08_piece_of_cake.wav', NULL);";
+			rc = sqlite3_exec(db, sqlInsert, NULL, NULL, &error);
+			if (rc)
+			{
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"%s\n", sqlite3_errmsg(db));
+				OutputDebugString(buf);
+			}
+			else
+			{
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"Inserted data\n");
+				OutputDebugString(buf);
+			}
+			*/
 
+	
+			// Display MyTable
+			cout << "Retrieving values in MyTable ..." << endl;
+			const char *sqlSelect = "SELECT * FROM song;";
+			char **results = NULL;
+			int rows, columns;
+			sqlite3_get_table(db, sqlSelect, &results, &rows, &columns, &error);
+			if (rc)
+			{
+				cerr << "Error executing SQLite3 query: " << sqlite3_errmsg(db) << endl << endl;
+				sqlite3_free(error);
+			}
+			else
+			{
+				// Display Table
+				for (int rowCtr = 0; rowCtr <= rows; ++rowCtr)
+				{
+					string songBuffer[8];
+					int index = 0;
+					int rowIndex = 0;
+					if (rowCtr != 0) {
+						rowIndex = dataGridView1->Rows->Add();
+						wchar_t buf[100];
+						//swprintf_s(buf, 100, L"%s ", results[cellPosition]);
+						swprintf_s(buf, 100, L"row Index: %d\n ", rowIndex);
+						OutputDebugString(buf);
+					}
+					for (int colCtr = 0; colCtr < columns; ++colCtr)
+					{
+						// Determine Cell Position
+						int cellPosition = (rowCtr * columns) + colCtr;
+
+						songBuffer[index] = results[cellPosition];
+						
+						wchar_t buf[100];
+						//swprintf_s(buf, 100, L"%s ", results[cellPosition]);
+						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
+						OutputDebugString(buf);
+
+						if (index >= 1 && index <= 6 && rowCtr != 0) {
+							System::String^ strNew = gcnew String(songBuffer[index].c_str());
+							dataGridView1->Rows[rowIndex]->Cells[index -1]->Value = strNew;
+						}
+
+						index++;
+						
+					}
+					
+					wchar_t buf[100];
+					swprintf_s(buf, 100, L"\n");
+					OutputDebugString(buf);
+
+					//Songs newSong(stoi(songBuffer[0]), songBuffer[1], songBuffer[2], songBuffer[3], songBuffer[4], songBuffer[5], songBuffer[6], songBuffer[7]);
+
+
+				}
+			}
+			sqlite3_free_table(results);
+
+			// Close Database
+			//cout << "Closing MyDb.db ..." << endl;
+			sqlite3_close(db);
+			//cout << "Closed MyDb.db" << endl << endl;
+			
 		}
+
+	
 
 	protected:
 		/// <summary>
