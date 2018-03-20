@@ -1,4 +1,4 @@
 /Debug
 /testCLR/Debug
 /.vs
-*.db
+/testCLR/*.db
