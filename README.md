@@ -1,5 +1,5 @@
 # MusicPlayer3280
-c++ project for school
+C++ project for school
 
 --------------------------------------------------------------------------------
 In case of linker/entry point error,
