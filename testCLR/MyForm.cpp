@@ -2,6 +2,7 @@
 #include <iostream>
 #include "MyForm.h"
 
+using namespace System::IO;
 using namespace System;
 using namespace System::Windows::Forms;
 

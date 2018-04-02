@@ -12,6 +12,7 @@ namespace testCLR {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::IO;
 
 	/// <summary>
 	/// Summary for MyForm
@@ -23,25 +24,30 @@ namespace testCLR {
 		bool mute = 0;
 		int playingSongIndex;
 		int soundTrackBarIndex;
+		BackgroundWorker m_oWorker;
 	private: System::Windows::Forms::DataGridView^  dataGridView1;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column2;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column3;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column4;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column5;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column6;
 	private: System::Windows::Forms::Label^  label3;
 	private: System::Windows::Forms::Label^  label4;
 	private: System::Windows::Forms::Button^  button7;
 	private: System::Windows::Forms::Button^  button8;
 	private: System::Windows::Forms::Button^  button9;
 	private: System::Windows::Forms::Button^  button10;
+	private: System::Windows::Forms::TextBox^  textBox1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column2;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column3;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column4;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column5;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column6;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column7;
+
 	public:
-		float currentTime = 0;
+		float currentTime = 0;		
 		MyForm(void)
 		{
 			InitMusicPlayer();
 			InitializeComponent();
+			//m_oWorker = new BackgroundWorker();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -132,9 +138,9 @@ namespace testCLR {
 						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
 						OutputDebugString(buf);
 
-						if (index >= 1 && index <= 6 && rowCtr != 0) {
+						if (index >= 1 && index <= 7 && rowCtr != 0) {
 							System::String^ strNew = gcnew String(songBuffer[index].c_str());
-							dataGridView1->Rows[rowIndex]->Cells[index -1]->Value = strNew;
+							dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = strNew;
 						}
 
 						index++;
@@ -217,12 +223,14 @@ namespace testCLR {
 			this->Column4 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->Column5 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->Column6 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column7 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->button7 = (gcnew System::Windows::Forms::Button());
 			this->button8 = (gcnew System::Windows::Forms::Button());
 			this->button9 = (gcnew System::Windows::Forms::Button());
 			this->button10 = (gcnew System::Windows::Forms::Button());
+			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
@@ -302,10 +310,12 @@ namespace testCLR {
 			// trackBar1
 			// 
 			this->trackBar1->Location = System::Drawing::Point(489, 114);
+			this->trackBar1->Maximum = 100;
 			this->trackBar1->Name = L"trackBar1";
 			this->trackBar1->Size = System::Drawing::Size(315, 45);
 			this->trackBar1->TabIndex = 6;
 			this->trackBar1->TabStop = false;
+			this->trackBar1->TickStyle = System::Windows::Forms::TickStyle::None;
 			// 
 			// button4
 			// 
@@ -359,12 +369,13 @@ namespace testCLR {
 			this->dataGridView1->AllowUserToDeleteRows = false;
 			this->dataGridView1->AllowUserToResizeRows = false;
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(6) {
+			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(7) {
 				this->Column1,
-					this->Column2, this->Column3, this->Column4, this->Column5, this->Column6
+					this->Column2, this->Column3, this->Column4, this->Column5, this->Column6, this->Column7
 			});
 			this->dataGridView1->Location = System::Drawing::Point(53, 201);
 			this->dataGridView1->Name = L"dataGridView1";
+			this->dataGridView1->ReadOnly = true;
 			this->dataGridView1->RowHeadersVisible = false;
 			this->dataGridView1->RowTemplate->Height = 24;
 			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
@@ -378,37 +389,50 @@ namespace testCLR {
 			// 
 			this->Column1->HeaderText = L"Name";
 			this->Column1->Name = L"Column1";
+			this->Column1->ReadOnly = true;
 			this->Column1->Width = 130;
 			// 
 			// Column2
 			// 
 			this->Column2->HeaderText = L"Artist";
 			this->Column2->Name = L"Column2";
+			this->Column2->ReadOnly = true;
 			this->Column2->Width = 130;
 			// 
 			// Column3
 			// 
 			this->Column3->HeaderText = L"Album";
 			this->Column3->Name = L"Column3";
+			this->Column3->ReadOnly = true;
 			this->Column3->Width = 130;
 			// 
 			// Column4
 			// 
 			this->Column4->HeaderText = L"Length";
 			this->Column4->Name = L"Column4";
+			this->Column4->ReadOnly = true;
 			this->Column4->Width = 130;
 			// 
 			// Column5
 			// 
 			this->Column5->HeaderText = L"Online/Offline";
 			this->Column5->Name = L"Column5";
+			this->Column5->ReadOnly = true;
 			this->Column5->Width = 130;
 			// 
 			// Column6
 			// 
 			this->Column6->HeaderText = L"Path";
 			this->Column6->Name = L"Column6";
-			this->Column6->Width = 200;
+			this->Column6->ReadOnly = true;
+			this->Column6->Width = 150;
+			// 
+			// Column7
+			// 
+			this->Column7->HeaderText = L"Lyrics Path";
+			this->Column7->Name = L"Column7";
+			this->Column7->ReadOnly = true;
+			this->Column7->Width = 50;
 			// 
 			// label3
 			// 
@@ -476,12 +500,25 @@ namespace testCLR {
 			this->button10->UseVisualStyleBackColor = true;
 			this->button10->Visible = false;
 			// 
+			// textBox1
+			// 
+			this->textBox1->Location = System::Drawing::Point(926, 84);
+			this->textBox1->Multiline = true;
+			this->textBox1->Name = L"textBox1";
+			this->textBox1->ReadOnly = true;
+			this->textBox1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
+			this->textBox1->Size = System::Drawing::Size(346, 347);
+			this->textBox1->TabIndex = 18;
+			this->textBox1->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
+			this->textBox1->WordWrap = false;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->ClientSize = System::Drawing::Size(1284, 461);
+			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->button10);
 			this->Controls->Add(this->button9);
 			this->Controls->Add(this->button8);
@@ -535,9 +572,30 @@ namespace testCLR {
 
 			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
 
+			//when play button is clicked, check if resume the same song or play new song
+			System::String^ selectedSong;
+			selectedSong = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[0]->Value->ToString();
 
-			RestartMusic();
-			//Playback(currentTime);
+			System::String^ currentSong;
+			currentSong = label1->Text;
+
+			if (String::Compare(selectedSong, currentSong) == 0) {
+				//same
+				RestartMusic();
+			}
+			else {
+				//not same
+				//update info first before playing the song
+				updateSongInfo();
+
+				System::String^ selectedSongPath;
+				selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
+				string songPath;
+				MarshalString(selectedSongPath, songPath);
+
+				playingSongIndex = dataGridView1->SelectedCells[0]->RowIndex;
+				SelectMusic(songPath.c_str()); // convert string to char*
+			}
 			playing = 1;
 		}		
 	}
@@ -586,6 +644,7 @@ namespace testCLR {
 	}
 
 	private: System::Void Table_Select(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
+				
 		System::String^ selectedSongPath;
 		selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
 		string songPath;
@@ -606,8 +665,8 @@ namespace testCLR {
 
 		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 		button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
-
-
+		
+		//update info first before playing the song
 		updateSongInfo();
 	}
 
@@ -664,7 +723,60 @@ namespace testCLR {
 		System::String^ strNew = gcnew String(songDuration.c_str());
 
 		label4->Text = strNew;
+
+		//update lyrics table
+		textBox1->Text = "";
+		String^ selectedLyricsPath;
+		selectedLyricsPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[6]->Value->ToString();
+		try
+		{
+			wchar_t buf[100];
+			swprintf_s(buf, 100, L"trying to open file: %s\n ", selectedLyricsPath);
+			OutputDebugString(buf);
+			StreamReader^ dine = gcnew StreamReader(selectedLyricsPath, System::Text::Encoding::UTF8);
+			//textBox1->Text = "Hello";
+
+			String^ str;
+			int count = 0;
+			while ((str = dine->ReadLine()) != nullptr)
+			{
+				count++;
+				textBox1->AppendText(str);
+				textBox1->AppendText("\n");
+			}
+			textBox1->Select(0,1);
+			textBox1->ScrollToCaret();
+			textBox1->Focus();
+			textBox1->DeselectAll();
+		}
+		catch (Exception^ e)
+		{
+			if (dynamic_cast<FileNotFoundException^>(e)) {
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"file not found: %s\n ", selectedLyricsPath);
+				OutputDebugString(buf);
+				textBox1->AppendText("No Lyrics File, plz input file path in db\n");
+			}
+			else {
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"error reading file: %s\n ", selectedLyricsPath);
+				OutputDebugString(buf);
+				textBox1->AppendText("error reading file:\n");
+				textBox1->AppendText(selectedLyricsPath);
+
+			}
+		}
+
+		bgTimer();
 	}
+
+	private: void bgTimer() {
+		//a background worker that keeps track of song progress bar
+
+		
+
+	}
+
 	private: System::Void Volume_Select(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 		soundTrackBarIndex = trackBar2->Value; 
 		int soundValue = trackBar2->Value * 6553;
