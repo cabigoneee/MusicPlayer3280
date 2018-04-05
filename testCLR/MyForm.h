@@ -2,8 +2,6 @@
 
 #include "MP.h"
 #include "sqlite3.h"
-#include "httpserver.h"
-#include "httpclient.h"
 #include <string>
 
 namespace testCLR {
@@ -21,9 +19,10 @@ namespace testCLR {
 	/// </summary>
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
-	public:  
+	public:
 		bool playing = 0;
 		bool mute = 0;
+		bool streamMode = 0;
 		int playingSongIndex;
 		int soundTrackBarIndex;
 		BackgroundWorker m_oWorker;
@@ -35,6 +34,16 @@ namespace testCLR {
 	private: System::Windows::Forms::Button^  button9;
 	private: System::Windows::Forms::Button^  button10;
 	private: System::Windows::Forms::TextBox^  textBox1;
+
+
+
+
+
+
+
+	private: System::Windows::Forms::TextBox^  textBox2;
+
+	private: System::Windows::Forms::Label^  label5;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column2;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column3;
@@ -42,9 +51,23 @@ namespace testCLR {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column5;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column6;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column7;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column8;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column9;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column10;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column11;
+	private: System::Windows::Forms::Button^  button11;
+	private: System::Windows::Forms::Label^  label6;
+	private: System::Windows::Forms::Label^  label7;
+	private: System::Windows::Forms::Label^  label8;
+	private: System::Windows::Forms::Label^  label9;
+	private: System::Windows::Forms::TextBox^  textBox3;
+	private: System::Windows::Forms::TextBox^  textBox4;
+	private: System::Windows::Forms::TextBox^  textBox5;
+	private: System::Windows::Forms::TextBox^  textBox6;
+	private: System::Windows::Forms::Button^  button12;
 
 	public:
-		float currentTime = 0;		
+		float currentTime = 0;
 		MyForm(void)
 		{
 			InitMusicPlayer();
@@ -89,22 +112,27 @@ namespace testCLR {
 			rc = sqlite3_exec(db, sqlInsert, NULL, NULL, &error);
 			if (rc)
 			{
-				wchar_t buf[100];
-				swprintf_s(buf, 100, L"%s\n", sqlite3_errmsg(db));
-				OutputDebugString(buf);
+			wchar_t buf[100];
+			swprintf_s(buf, 100, L"%s\n", sqlite3_errmsg(db));
+			OutputDebugString(buf);
 			}
 			else
 			{
-				wchar_t buf[100];
-				swprintf_s(buf, 100, L"Inserted data\n");
-				OutputDebugString(buf);
+			wchar_t buf[100];
+			swprintf_s(buf, 100, L"Inserted data\n");
+			OutputDebugString(buf);
 			}
 			*/
 
-	
+
 			// Display MyTable
 			cout << "Retrieving values in MyTable ..." << endl;
-			const char *sqlSelect = "SELECT * FROM song;";
+			//const char *sqlSelect = "SELECT * FROM song;";
+			string para1 = "SELECT ";
+			string parameter = "*";
+			string para2 = " FROM song;";
+			string fullPara = para1 + parameter + para2;
+			const char *sqlSelect = fullPara.c_str();
 			char **results = NULL;
 			int rows, columns;
 			sqlite3_get_table(db, sqlSelect, &results, &rows, &columns, &error);
@@ -118,7 +146,7 @@ namespace testCLR {
 				// Display Table
 				for (int rowCtr = 0; rowCtr <= rows; ++rowCtr)
 				{
-					string songBuffer[8];
+					string songBuffer[12];
 					int index = 0;
 					int rowIndex = 0;
 					if (rowCtr != 0) {
@@ -134,21 +162,21 @@ namespace testCLR {
 						int cellPosition = (rowCtr * columns) + colCtr;
 
 						songBuffer[index] = results[cellPosition];
-						
+
 						wchar_t buf[100];
 						//swprintf_s(buf, 100, L"%s ", results[cellPosition]);
 						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
 						OutputDebugString(buf);
 
-						if (index >= 1 && index <= 7 && rowCtr != 0) {
+						if (index >= 1 && index <= 12 && rowCtr != 0) {
 							System::String^ strNew = gcnew String(songBuffer[index].c_str());
 							dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = strNew;
 						}
 
 						index++;
-						
+
 					}
-					
+
 					wchar_t buf[100];
 					swprintf_s(buf, 100, L"\n");
 					OutputDebugString(buf);
@@ -164,10 +192,10 @@ namespace testCLR {
 			//cout << "Closing MyDb.db ..." << endl;
 			sqlite3_close(db);
 			//cout << "Closed MyDb.db" << endl << endl;
-			
+
 		}
 
-	
+
 
 	protected:
 		/// <summary>
@@ -226,6 +254,10 @@ namespace testCLR {
 			this->Column5 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->Column6 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->Column7 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column8 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column9 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column10 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column11 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->button7 = (gcnew System::Windows::Forms::Button());
@@ -233,6 +265,18 @@ namespace testCLR {
 			this->button9 = (gcnew System::Windows::Forms::Button());
 			this->button10 = (gcnew System::Windows::Forms::Button());
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
+			this->textBox2 = (gcnew System::Windows::Forms::TextBox());
+			this->label5 = (gcnew System::Windows::Forms::Label());
+			this->button11 = (gcnew System::Windows::Forms::Button());
+			this->label6 = (gcnew System::Windows::Forms::Label());
+			this->label7 = (gcnew System::Windows::Forms::Label());
+			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->label9 = (gcnew System::Windows::Forms::Label());
+			this->textBox3 = (gcnew System::Windows::Forms::TextBox());
+			this->textBox4 = (gcnew System::Windows::Forms::TextBox());
+			this->textBox5 = (gcnew System::Windows::Forms::TextBox());
+			this->textBox6 = (gcnew System::Windows::Forms::TextBox());
+			this->button12 = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
@@ -371,16 +415,16 @@ namespace testCLR {
 			this->dataGridView1->AllowUserToDeleteRows = false;
 			this->dataGridView1->AllowUserToResizeRows = false;
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(7) {
+			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(11) {
 				this->Column1,
-					this->Column2, this->Column3, this->Column4, this->Column5, this->Column6, this->Column7
+					this->Column2, this->Column3, this->Column4, this->Column5, this->Column6, this->Column7, this->Column8, this->Column9, this->Column10,
+					this->Column11
 			});
 			this->dataGridView1->Location = System::Drawing::Point(53, 201);
 			this->dataGridView1->Name = L"dataGridView1";
 			this->dataGridView1->ReadOnly = true;
 			this->dataGridView1->RowHeadersVisible = false;
 			this->dataGridView1->RowTemplate->Height = 24;
-			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
 			this->dataGridView1->SelectionMode = System::Windows::Forms::DataGridViewSelectionMode::FullRowSelect;
 			this->dataGridView1->Size = System::Drawing::Size(850, 230);
 			this->dataGridView1->TabIndex = 11;
@@ -389,7 +433,7 @@ namespace testCLR {
 			// 
 			// Column1
 			// 
-			this->Column1->HeaderText = L"Name";
+			this->Column1->HeaderText = L"Title";
 			this->Column1->Name = L"Column1";
 			this->Column1->ReadOnly = true;
 			this->Column1->Width = 130;
@@ -410,7 +454,7 @@ namespace testCLR {
 			// 
 			// Column4
 			// 
-			this->Column4->HeaderText = L"Length";
+			this->Column4->HeaderText = L"Duration";
 			this->Column4->Name = L"Column4";
 			this->Column4->ReadOnly = true;
 			this->Column4->Width = 130;
@@ -424,7 +468,7 @@ namespace testCLR {
 			// 
 			// Column6
 			// 
-			this->Column6->HeaderText = L"Path";
+			this->Column6->HeaderText = L"Song Path";
 			this->Column6->Name = L"Column6";
 			this->Column6->ReadOnly = true;
 			this->Column6->Width = 150;
@@ -435,6 +479,32 @@ namespace testCLR {
 			this->Column7->Name = L"Column7";
 			this->Column7->ReadOnly = true;
 			this->Column7->Width = 50;
+			// 
+			// Column8
+			// 
+			this->Column8->HeaderText = L"Image Path";
+			this->Column8->Name = L"Column8";
+			this->Column8->ReadOnly = true;
+			// 
+			// Column9
+			// 
+			this->Column9->HeaderText = L"Remote IP";
+			this->Column9->Name = L"Column9";
+			this->Column9->ReadOnly = true;
+			this->Column9->Width = 50;
+			// 
+			// Column10
+			// 
+			this->Column10->HeaderText = L"Port";
+			this->Column10->Name = L"Column10";
+			this->Column10->ReadOnly = true;
+			this->Column10->Width = 20;
+			// 
+			// Column11
+			// 
+			this->Column11->HeaderText = L"Checksum";
+			this->Column11->Name = L"Column11";
+			this->Column11->ReadOnly = true;
 			// 
 			// label3
 			// 
@@ -458,7 +528,7 @@ namespace testCLR {
 			// 
 			this->button7->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button7.BackgroundImage")));
 			this->button7->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->button7->Location = System::Drawing::Point(1069, 12);
+			this->button7->Location = System::Drawing::Point(1242, 48);
 			this->button7->Name = L"button7";
 			this->button7->Size = System::Drawing::Size(30, 30);
 			this->button7->TabIndex = 14;
@@ -470,7 +540,7 @@ namespace testCLR {
 			// 
 			this->button8->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button8.BackgroundImage")));
 			this->button8->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->button8->Location = System::Drawing::Point(1033, 12);
+			this->button8->Location = System::Drawing::Point(1206, 48);
 			this->button8->Name = L"button8";
 			this->button8->Size = System::Drawing::Size(30, 30);
 			this->button8->TabIndex = 15;
@@ -482,7 +552,7 @@ namespace testCLR {
 			// 
 			this->button9->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button9.BackgroundImage")));
 			this->button9->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->button9->Location = System::Drawing::Point(997, 12);
+			this->button9->Location = System::Drawing::Point(1170, 48);
 			this->button9->Name = L"button9";
 			this->button9->Size = System::Drawing::Size(30, 30);
 			this->button9->TabIndex = 16;
@@ -494,7 +564,7 @@ namespace testCLR {
 			// 
 			this->button10->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
 			this->button10->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->button10->Location = System::Drawing::Point(961, 12);
+			this->button10->Location = System::Drawing::Point(1136, 48);
 			this->button10->Name = L"button10";
 			this->button10->Size = System::Drawing::Size(30, 30);
 			this->button10->TabIndex = 17;
@@ -504,15 +574,130 @@ namespace testCLR {
 			// 
 			// textBox1
 			// 
-			this->textBox1->Location = System::Drawing::Point(926, 84);
+			this->textBox1->Location = System::Drawing::Point(926, 114);
 			this->textBox1->Multiline = true;
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->ReadOnly = true;
 			this->textBox1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-			this->textBox1->Size = System::Drawing::Size(346, 347);
+			this->textBox1->Size = System::Drawing::Size(346, 317);
 			this->textBox1->TabIndex = 18;
 			this->textBox1->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
 			this->textBox1->WordWrap = false;
+			// 
+			// textBox2
+			// 
+			this->textBox2->Location = System::Drawing::Point(218, 173);
+			this->textBox2->Name = L"textBox2";
+			this->textBox2->Size = System::Drawing::Size(211, 22);
+			this->textBox2->TabIndex = 19;
+			this->textBox2->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::Enter_Press);
+			// 
+			// label5
+			// 
+			this->label5->AutoSize = true;
+			this->label5->Font = (gcnew System::Drawing::Font(L"PMingLiU", 15));
+			this->label5->Location = System::Drawing::Point(149, 173);
+			this->label5->Name = L"label5";
+			this->label5->Size = System::Drawing::Size(63, 20);
+			this->label5->TabIndex = 21;
+			this->label5->Text = L"Search:";
+			// 
+			// button11
+			// 
+			this->button11->BackColor = System::Drawing::Color::Yellow;
+			this->button11->Font = (gcnew System::Drawing::Font(L"Segoe UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button11->Location = System::Drawing::Point(926, 12);
+			this->button11->Name = L"button11";
+			this->button11->Size = System::Drawing::Size(75, 23);
+			this->button11->TabIndex = 22;
+			this->button11->Text = L"Go Stream";
+			this->button11->UseVisualStyleBackColor = false;
+			this->button11->Click += gcnew System::EventHandler(this, &MyForm::Change_Stream_Mode_Click);
+			// 
+			// label6
+			// 
+			this->label6->AutoSize = true;
+			this->label6->Location = System::Drawing::Point(928, 57);
+			this->label6->Name = L"label6";
+			this->label6->Size = System::Drawing::Size(25, 12);
+			this->label6->TabIndex = 23;
+			this->label6->Text = L"PC1";
+			this->label6->Visible = false;
+			// 
+			// label7
+			// 
+			this->label7->AutoSize = true;
+			this->label7->Location = System::Drawing::Point(928, 84);
+			this->label7->Name = L"label7";
+			this->label7->Size = System::Drawing::Size(25, 12);
+			this->label7->TabIndex = 24;
+			this->label7->Text = L"PC2";
+			this->label7->Visible = false;
+			// 
+			// label8
+			// 
+			this->label8->AutoSize = true;
+			this->label8->Location = System::Drawing::Point(966, 38);
+			this->label8->Name = L"label8";
+			this->label8->Size = System::Drawing::Size(55, 12);
+			this->label8->TabIndex = 25;
+			this->label8->Text = L"IP Address";
+			this->label8->Visible = false;
+			// 
+			// label9
+			// 
+			this->label9->AutoSize = true;
+			this->label9->Location = System::Drawing::Point(1049, 38);
+			this->label9->Name = L"label9";
+			this->label9->Size = System::Drawing::Size(24, 12);
+			this->label9->TabIndex = 26;
+			this->label9->Text = L"Port";
+			this->label9->Visible = false;
+			// 
+			// textBox3
+			// 
+			this->textBox3->Location = System::Drawing::Point(959, 53);
+			this->textBox3->Name = L"textBox3";
+			this->textBox3->Size = System::Drawing::Size(79, 22);
+			this->textBox3->TabIndex = 27;
+			this->textBox3->Visible = false;
+			// 
+			// textBox4
+			// 
+			this->textBox4->Location = System::Drawing::Point(959, 81);
+			this->textBox4->Name = L"textBox4";
+			this->textBox4->Size = System::Drawing::Size(79, 22);
+			this->textBox4->TabIndex = 28;
+			this->textBox4->Visible = false;
+			// 
+			// textBox5
+			// 
+			this->textBox5->Location = System::Drawing::Point(1051, 53);
+			this->textBox5->Name = L"textBox5";
+			this->textBox5->Size = System::Drawing::Size(29, 22);
+			this->textBox5->TabIndex = 29;
+			this->textBox5->Visible = false;
+			// 
+			// textBox6
+			// 
+			this->textBox6->Location = System::Drawing::Point(1051, 81);
+			this->textBox6->Name = L"textBox6";
+			this->textBox6->Size = System::Drawing::Size(29, 22);
+			this->textBox6->TabIndex = 30;
+			this->textBox6->Visible = false;
+			// 
+			// button12
+			// 
+			this->button12->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button12.BackgroundImage")));
+			this->button12->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button12->Location = System::Drawing::Point(1086, 61);
+			this->button12->Name = L"button12";
+			this->button12->Size = System::Drawing::Size(30, 30);
+			this->button12->TabIndex = 31;
+			this->button12->UseVisualStyleBackColor = true;
+			this->button12->Visible = false;
+			this->button12->Click += gcnew System::EventHandler(this, &MyForm::Connect_Click);
 			// 
 			// MyForm
 			// 
@@ -520,6 +705,18 @@ namespace testCLR {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->ClientSize = System::Drawing::Size(1284, 461);
+			this->Controls->Add(this->button12);
+			this->Controls->Add(this->textBox6);
+			this->Controls->Add(this->textBox5);
+			this->Controls->Add(this->textBox4);
+			this->Controls->Add(this->textBox3);
+			this->Controls->Add(this->label9);
+			this->Controls->Add(this->label8);
+			this->Controls->Add(this->label7);
+			this->Controls->Add(this->label6);
+			this->Controls->Add(this->button11);
+			this->Controls->Add(this->label5);
+			this->Controls->Add(this->textBox2);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->button10);
 			this->Controls->Add(this->button9);
@@ -561,7 +758,7 @@ namespace testCLR {
 			OutputDebugString(buf);
 
 			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button9.BackgroundImage")));
-			
+
 			PauseMusic();
 			//ClosePlayer();			
 		}
@@ -599,7 +796,7 @@ namespace testCLR {
 				SelectMusic(songPath.c_str()); // convert string to char*
 			}
 			playing = 1;
-		}		
+		}
 	}
 	private: System::Void Forward_Click(System::Object^  sender, System::EventArgs^  e) {
 		SkipSecond(10000);
@@ -621,7 +818,7 @@ namespace testCLR {
 		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 		if (mute) {
 			trackBar2->Value = soundTrackBarIndex;
-			mute = 0;			
+			mute = 0;
 			button4->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button7.BackgroundImage")));
 		}
 		else {
@@ -634,19 +831,19 @@ namespace testCLR {
 		unsigned short value = (unsigned short)soundValue;
 
 		SetVolume(value, value);
-		
-	}	
-	//converting String^ to char*
-	void MarshalString(String ^ s, string& os) {
-		using namespace Runtime::InteropServices;
-		const char* chars =
-			(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
-		os = chars;
-		Marshal::FreeHGlobal(IntPtr((void*)chars));
+
 	}
+			 //converting String^ to char*
+			 void MarshalString(String ^ s, string& os) {
+				 using namespace Runtime::InteropServices;
+				 const char* chars =
+					 (const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+				 os = chars;
+				 Marshal::FreeHGlobal(IntPtr((void*)chars));
+			 }
 
 	private: System::Void Table_Select(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
-				
+
 		System::String^ selectedSongPath;
 		selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
 		string songPath;
@@ -667,7 +864,7 @@ namespace testCLR {
 
 		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 		button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
-		
+
 		//update info first before playing the song
 		updateSongInfo();
 	}
@@ -727,6 +924,7 @@ namespace testCLR {
 		label4->Text = strNew;
 
 		//update lyrics table
+		textBox1->Visible = false;
 		textBox1->Text = "";
 		String^ selectedLyricsPath;
 		selectedLyricsPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[6]->Value->ToString();
@@ -746,10 +944,11 @@ namespace testCLR {
 				textBox1->AppendText(str);
 				textBox1->AppendText("\n");
 			}
-			textBox1->Select(0,1);
+			textBox1->Select(0, 1);
 			textBox1->ScrollToCaret();
 			textBox1->Focus();
 			textBox1->DeselectAll();
+			textBox1->Visible = true;
 		}
 		catch (Exception^ e)
 		{
@@ -775,12 +974,12 @@ namespace testCLR {
 	private: void bgTimer() {
 		//a background worker that keeps track of song progress bar
 
-		
+
 
 	}
 
 	private: System::Void Volume_Select(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
-		soundTrackBarIndex = trackBar2->Value; 
+		soundTrackBarIndex = trackBar2->Value;
 		int soundValue = trackBar2->Value * 6553;
 
 		/*
@@ -788,8 +987,8 @@ namespace testCLR {
 		std::string res;
 		while (soundValue > 0)
 		{
-			res = hex[soundValue % 16] + res;
-			soundValue /= 16;
+		res = hex[soundValue % 16] + res;
+		soundValue /= 16;
 		}
 		string value = "0x" + std::to_string(soundValue);
 		*/
@@ -801,5 +1000,157 @@ namespace testCLR {
 		swprintf_s(buf, 100, L"trackBar: %hu\n", value);
 		OutputDebugString(buf);
 	}
-};
+
+	private: System::Void Enter_Press(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
+		if (e->KeyCode == Keys::Enter) {
+			wchar_t buf[100];
+			swprintf_s(buf, 100, L"search button clicked!!\n");
+			OutputDebugString(buf);
+
+			System::String^ searchedParameter;
+			searchedParameter = textBox2->Text;
+			string parameter;
+			MarshalString(searchedParameter, parameter);
+
+			sqlite3 *db;
+			int rc = sqlite3_open("songDB.db", &db);
+			char *error;
+
+			if (rc)
+			{
+				sqlite3_close(db);
+
+				swprintf_s(buf, 100, L"Error opening SQLite3 database\n");
+				OutputDebugString(buf);
+			}
+			else
+			{
+				swprintf_s(buf, 100, L"Search Bar: Opened songDB.db.\n");
+				OutputDebugString(buf);
+			}
+
+			swprintf_s(buf, 100, L"search parameter: %s\n ", parameter.c_str());
+			OutputDebugString(buf);
+			string fullPara;
+			if (parameter.empty() == true) {
+				//string is empty
+				fullPara = "SELECT * FROM song";
+			}
+			else {
+				string para1 = "SELECT * FROM song WHERE";
+				fullPara = para1;
+				string column[11] = { "Title", "Artist", "Album", "Duration", "Location", "songPath", "lyricsPath", "imagePath", "remoteIP", "port", "checksum" };
+				for (int i = 0; i < 11; i++) {
+					string likePara = "'%" + parameter + "%'";
+					fullPara = fullPara + " " + column[i] + " LIKE " + likePara;
+					if (i < 10) {
+						fullPara = fullPara + " OR";
+					}
+				}
+			}
+
+
+			//swprintf_s(buf, 100, L"%s ", results[cellPosition]);
+			const char *sqlSelect = fullPara.c_str();
+			char **results = NULL;
+			int rows, columns;
+			wchar_t buff[1000];
+			swprintf_s(buff, 1000, L"search Path: %s\n ", sqlSelect);
+			OutputDebugString(buff);
+			sqlite3_get_table(db, sqlSelect, &results, &rows, &columns, &error);
+			if (rc)
+			{
+				cerr << "Error executing SQLite3 query: " << sqlite3_errmsg(db) << endl << endl;
+				sqlite3_free(error);
+			}
+			else
+			{
+				dataGridView1->Rows->Clear();
+				// Display Table
+				for (int rowCtr = 0; rowCtr <= rows; ++rowCtr)
+				{
+					string songBuffer[12];
+					int index = 0;
+					int rowIndex = 0;
+					if (rowCtr != 0) {
+						rowIndex = dataGridView1->Rows->Add();
+						wchar_t buf[100];
+						//swprintf_s(buf, 100, L"%s ", results[cellPosition]);
+						swprintf_s(buf, 100, L"row Index: %d\n ", rowIndex);
+						OutputDebugString(buf);
+					}
+					for (int colCtr = 0; colCtr < columns; ++colCtr)
+					{
+						// Determine Cell Position
+						int cellPosition = (rowCtr * columns) + colCtr;
+
+						songBuffer[index] = results[cellPosition];
+
+						wchar_t buf[100];
+						//swprintf_s(buf, 100, L"%s ", results[cellPosition]);
+						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
+						OutputDebugString(buf);
+
+						if (index >= 1 && index <= 12 && rowCtr != 0) {
+							System::String^ strNew = gcnew String(songBuffer[index].c_str());
+							dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = strNew;
+						}
+
+						index++;
+
+					}
+
+					wchar_t buf[100];
+					swprintf_s(buf, 100, L"\n");
+					OutputDebugString(buf);
+
+					//Songs newSong(stoi(songBuffer[0]), songBuffer[1], songBuffer[2], songBuffer[3], songBuffer[4], songBuffer[5], songBuffer[6], songBuffer[7]);
+
+
+				}
+			}
+			sqlite3_free_table(results);
+
+			// Close Database
+			//cout << "Closing MyDb.db ..." << endl;
+			sqlite3_close(db);
+		}
+	}
+	private: System::Void Change_Stream_Mode_Click(System::Object^  sender, System::EventArgs^  e) {
+		if (streamMode) {
+			//stream mode to local mode
+			label6->Visible = false;
+			label7->Visible = false;
+			label8->Visible = false;
+			label9->Visible = false;
+			textBox3->Visible = false;
+			textBox4->Visible = false;
+			textBox5->Visible = false;
+			textBox6->Visible = false;
+			button12->Visible = false;
+			button11->Text = "Go Stream";
+
+			streamMode = false;
+		}
+		else {
+			//local mode to stream mode
+			label6->Visible = true;
+			label7->Visible = true;
+			label8->Visible = true;
+			label9->Visible = true;
+			textBox3->Visible = true;
+			textBox4->Visible = true;
+			textBox5->Visible = true;
+			textBox6->Visible = true;
+			button12->Visible = true;
+			button11->Text = "Go Local";
+
+			streamMode = true;
+		}
+	}
+	private: System::Void Connect_Click(System::Object^  sender, System::EventArgs^  e) {
+
+
+	}
+	};
 }
