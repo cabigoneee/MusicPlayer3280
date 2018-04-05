@@ -21,6 +21,12 @@
     <ClCompile Include="MP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="httpserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="httpclient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyForm.h">
@@ -30,6 +36,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sqlite3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="httpserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="httpclient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

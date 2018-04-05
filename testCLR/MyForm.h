@@ -2,6 +2,8 @@
 
 #include "MP.h"
 #include "sqlite3.h"
+#include "httpserver.h"
+#include "httpclient.h"
 #include <string>
 
 namespace testCLR {

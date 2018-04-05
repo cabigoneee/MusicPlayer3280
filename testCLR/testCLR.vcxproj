@@ -92,7 +92,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>sqlite3.lib</AdditionalDependencies>
+      <AdditionalDependencies>sqlite3.lib;libmicrohttpd-dll_d.lib;libcurl.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>Main</EntryPointSymbol>
       <AdditionalLibraryDirectories>
@@ -135,10 +135,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="httpclient.cpp" />
+    <ClCompile Include="httpserver.cpp" />
     <ClCompile Include="MP.cpp" />
     <ClCompile Include="MyForm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="httpclient.h" />
+    <ClInclude Include="httpserver.h" />
     <ClInclude Include="MP.h" />
     <ClInclude Include="MyForm.h">
       <FileType>CppForm</FileType>

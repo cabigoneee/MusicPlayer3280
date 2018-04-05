@@ -6,6 +6,8 @@
 #define MAX_BUFFER_SIZE (1024 * 16)
 #define MAX_BUFFER_COUNT 20
 
+#define MAX_STREAM_BUFFER_SIZE (1024 * 256)
+
 using namespace std;
 
 int InitMusicPlayer();
@@ -33,3 +35,29 @@ typedef struct {
 	char* data;
 	//bufferState state;
 } WaveFileBlock;
+
+//////////////////streaming////////////////////
+typedef struct {
+	char* server_ip;
+	int port;
+	char* path;
+} StreamSrcInfo;
+
+typedef struct {
+	char* data;
+	int length = 0;
+} BufElem;
+
+typedef struct {
+	BufElem* list;
+	int length = 0;
+} StreamBuffer;
+
+int SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
+int s_SetWaveFormat();
+int s_AddStreamBufferFromTime(int millisecond);
+void s_GetStreamBufferFromSrc(LPVOID args);
+void SetStreamBufferListLength(int length);
+void InsertStreamBuffer(int index, char* data, int length);
+void ClearStreamBuffer();
+void s_AddStreamBufferToPlayBuffer();
