@@ -2,6 +2,8 @@
 
 #include "MP.h"
 #include "sqlite3.h"
+#include "httpclient.h"
+#include "httpserver.h"
 #include <string>
 
 namespace testCLR {
@@ -65,6 +67,7 @@ namespace testCLR {
 	private: System::Windows::Forms::TextBox^  textBox5;
 	private: System::Windows::Forms::TextBox^  textBox6;
 	private: System::Windows::Forms::Button^  button12;
+	private: System::Windows::Forms::Label^  label10;
 
 	public:
 		float currentTime = 0;
@@ -193,6 +196,20 @@ namespace testCLR {
 			sqlite3_close(db);
 			//cout << "Closed MyDb.db" << endl << endl;
 
+			//streaming as host automatically when the application startes
+			int hostSetup = startDaemon();
+			if (hostSetup == 0) {
+				//success
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"Host setup successfully\n");
+				OutputDebugString(buf);
+			}
+			else {
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"Failed to setup host for streaming\n");
+				OutputDebugString(buf);
+			}
+
 		}
 
 
@@ -277,6 +294,7 @@ namespace testCLR {
 			this->textBox5 = (gcnew System::Windows::Forms::TextBox());
 			this->textBox6 = (gcnew System::Windows::Forms::TextBox());
 			this->button12 = (gcnew System::Windows::Forms::Button());
+			this->label10 = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
@@ -659,7 +677,7 @@ namespace testCLR {
 			// 
 			this->textBox3->Location = System::Drawing::Point(959, 53);
 			this->textBox3->Name = L"textBox3";
-			this->textBox3->Size = System::Drawing::Size(79, 22);
+			this->textBox3->Size = System::Drawing::Size(85, 22);
 			this->textBox3->TabIndex = 27;
 			this->textBox3->Visible = false;
 			// 
@@ -667,8 +685,8 @@ namespace testCLR {
 			// 
 			this->textBox4->Location = System::Drawing::Point(959, 81);
 			this->textBox4->Name = L"textBox4";
-			this->textBox4->Size = System::Drawing::Size(79, 22);
-			this->textBox4->TabIndex = 28;
+			this->textBox4->Size = System::Drawing::Size(85, 22);
+			this->textBox4->TabIndex = 29;
 			this->textBox4->Visible = false;
 			// 
 			// textBox5
@@ -676,7 +694,7 @@ namespace testCLR {
 			this->textBox5->Location = System::Drawing::Point(1051, 53);
 			this->textBox5->Name = L"textBox5";
 			this->textBox5->Size = System::Drawing::Size(29, 22);
-			this->textBox5->TabIndex = 29;
+			this->textBox5->TabIndex = 28;
 			this->textBox5->Visible = false;
 			// 
 			// textBox6
@@ -699,12 +717,23 @@ namespace testCLR {
 			this->button12->Visible = false;
 			this->button12->Click += gcnew System::EventHandler(this, &MyForm::Connect_Click);
 			// 
+			// label10
+			// 
+			this->label10->AutoSize = true;
+			this->label10->Location = System::Drawing::Point(1125, 70);
+			this->label10->Name = L"label10";
+			this->label10->Size = System::Drawing::Size(117, 12);
+			this->label10->TabIndex = 32;
+			this->label10->Text = L"Connection Success/Fail";
+			this->label10->Visible = false;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->ClientSize = System::Drawing::Size(1284, 461);
+			this->Controls->Add(this->label10);
 			this->Controls->Add(this->button12);
 			this->Controls->Add(this->textBox6);
 			this->Controls->Add(this->textBox5);
@@ -1128,6 +1157,7 @@ namespace testCLR {
 			textBox5->Visible = false;
 			textBox6->Visible = false;
 			button12->Visible = false;
+			label10->Visible = false;
 			button11->Text = "Go Stream";
 
 			streamMode = false;
@@ -1150,7 +1180,63 @@ namespace testCLR {
 	}
 	private: System::Void Connect_Click(System::Object^  sender, System::EventArgs^  e) {
 
+		System::String^ IP_PC1;
+		IP_PC1 = textBox3->Text;
+		string IPPC1;
+		MarshalString(IP_PC1, IPPC1);
+
+		System::String^ port_PC1;
+		port_PC1 = textBox5->Text;
+		string portPC1;
+		MarshalString(port_PC1, portPC1);
+
+		System::String^ IP_PC2;
+		IP_PC2 = textBox4->Text;
+		string IPPC2;
+		MarshalString(IP_PC2, IPPC2);
+
+		System::String^ port_PC2;
+		port_PC2 = textBox6->Text;
+		string portPC2;
+		MarshalString(port_PC2, portPC2);
+
+		wchar_t buf[100];
+		swprintf_s(buf, 100, L"PC1's IP: %s:%s\n ", IPPC1.c_str(), portPC1.c_str());
+		OutputDebugString(buf);
+		swprintf_s(buf, 100, L"PC2's IP: %s:%s\n ", IPPC2.c_str(), portPC2.c_str());
+		OutputDebugString(buf);
+
+		int connection1 = test_connection(IPPC1.c_str(), stoi(portPC1));
+		int connection2 = test_connection(IPPC2.c_str(), stoi(portPC2));
+
+		if (connection1 == 0 && connection2 == 0) {
+			//both success
+			label10->Text = "Connection Completed!";
+			label10->ForeColor = Color::FromName("SeaGreen");
+			swprintf_s(buf, 100, L"Connection Completed!\n");
+			OutputDebugString(buf);
+		}
+		else if (connection1 == 0 && connection2 != 0) {
+			label10->Text = "Failed to connect to PC2";
+			label10->ForeColor = Color::FromName("Crimson");
+			swprintf_s(buf, 100, L"Failed to connect to PC2\n");
+			OutputDebugString(buf);
+		}
+		else if (connection1 != 0 && connection2 == 0) {
+			label10->Text = "Failed to connect to PC1";
+			label10->ForeColor = Color::FromName("Crimson");
+			swprintf_s(buf, 100, L"Failed to connect to PC1\n");
+			OutputDebugString(buf);
+		}
+		else {
+			label10->Text = "Failed to connect to both";
+			label10->ForeColor = Color::FromName("Crimson");
+			swprintf_s(buf, 100, L"Failed to connect to both PC1 and PC2\n");
+			OutputDebugString(buf);
+		}
+
+		label10->Visible = true;
 
 	}
-	};
+};
 }
