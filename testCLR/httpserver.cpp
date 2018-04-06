@@ -10,7 +10,7 @@
 
 using namespace std;
 
-struct MHD_Daemon *daemon;		// global daemon
+struct MHD_Daemon *daemon = NULL;		// global daemon
 
 int answer_to_connection(void *cls, struct MHD_Connection *connection,
 	const char *url,
@@ -114,6 +114,13 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection,
 			MHD_destroy_response(response);
 			return ret;
 		}
+		else if (strcmp(url, "/") == 0) {
+			const char *result = "welcome";
+			response = MHD_create_response_from_buffer(strlen(result), (void *)result, MHD_RESPMEM_PERSISTENT);
+			ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+			MHD_destroy_response(response);
+			return ret;
+		}
 		else {
 			const char *result = "unknown path";
 			response = MHD_create_response_from_buffer(strlen(result), (void *)result, MHD_RESPMEM_PERSISTENT);
@@ -127,16 +134,11 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection,
 	}
 }
 
-int startDaemon()
-{
-	//struct MHD_Daemon *daemon;
-
-	daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,
+int startDaemon(int port) {
+	if (daemon != NULL) return 2;			// already running
+	daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, port, NULL, NULL,
 		&answer_to_connection, NULL, MHD_OPTION_END);
-	if (NULL == daemon) return 1;
-	//getchar();
-
-	//MHD_stop_daemon(daemon);
+	if (daemon == NULL) return 1;			// cannot set
 	return 0;
 }
 
@@ -144,6 +146,7 @@ int stopDaemon() {
 	if (daemon == NULL) return 1;
 	else {
 		MHD_stop_daemon(daemon);
+		daemon = NULL;
 		return 0;
 	}
 }

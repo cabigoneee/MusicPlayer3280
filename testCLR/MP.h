@@ -55,9 +55,11 @@ typedef struct {
 
 int SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
 int s_SetWaveFormat();
+int s_Playback(int millisecond);
 int s_AddStreamBufferFromTime(int millisecond);
 void s_GetStreamBufferFromSrc(LPVOID args);
 void SetStreamBufferListLength(int length);
 void InsertStreamBuffer(int index, char* data, int length);
 void ClearStreamBuffer();
 void s_AddStreamBufferToPlayBuffer();
+void s_PlayWavFromBuffer();

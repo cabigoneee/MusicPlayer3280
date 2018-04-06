@@ -5,8 +5,16 @@
 
 using namespace std;
 
-size_t write_data(void *ptr, size_t size, size_t nmemb, char *data) {
-	memcpy(data, ptr, size * nmemb);
+typedef struct data_buffer {
+	char *data;
+	int pos;
+} write_result;
+
+size_t write_data(void *ptr, size_t size, size_t nmemb, void *data) {
+	write_result *res = (write_result *)data;
+	printf("size: %d nmemb: %d\n", size, nmemb);
+	memcpy(res->data + res->pos, ptr, size * nmemb);
+	res->pos += size * nmemb;
 	return size * nmemb;
 }
 
@@ -18,10 +26,14 @@ int get_data(const char* server_ip, int port, const char* filename, int start, i
 	CURL *curl = curl_easy_init();
 	CURLcode res;
 	if (curl) {
+		// initialize write result buffer
+		write_result write_res;
+		write_res.data = data;
+		write_res.pos = 0;
 		string url("http://" + string(server_ip) + ":" + to_string(port) + "/get_data?filename=" + string(filename)
 		+ "&start=" + to_string(start) + "&length=" + to_string(length));
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, data);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, write_res);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
 		res = curl_easy_perform(curl);
