@@ -16,5 +16,5 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection,
 	const char *method, const char *version,
 	const char *upload_data,
 	size_t *upload_data_size, void **con_cls);
-int startDaemon();
+int startDaemon(int port = PORT);
 int stopDaemon();

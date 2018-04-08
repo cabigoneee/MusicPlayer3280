@@ -466,6 +466,7 @@ StreamBuffer streamBuf;
 StreamSrcInfo streamSrcInfo[2];
 
 DWORD t_getStreamData1Id, t_getStreamData2Id;
+DWORD t_sAddBufferId, t_sPlayBufferId;
 
 // arguments pass to get streaming buffer thread
 typedef struct {
@@ -584,6 +585,18 @@ int s_SetWaveFormat() {
 	return 0;
 }
 
+// playback wav at specified time
+int s_Playback(int millisecond) {
+	if (s_SetWaveFormat() != 0) {
+		return 1;
+	}
+	s_AddStreamBufferFromTime(millisecond);
+	//Thread::Sleep(5000);
+	HANDLE t1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_AddStreamBufferToPlayBuffer, NULL, 0, &t_sAddBufferId);
+	HANDLE t2 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_PlayWavFromBuffer, NULL, 0, &t_sPlayBufferId);
+	return 0;
+}
+
 // load the buffer from the starting time, leaving the buffers of the skipped sections empty
 int s_AddStreamBufferFromTime(int millisecond) {
 	DWORD loadStartOffset = 44;
@@ -664,6 +677,7 @@ void SetStreamBufferListLength(int length) {
 	streamBuf.list = new BufElem[length];
 }
 
+// insert streaming data into specified index
 void InsertStreamBuffer(int index, char* data, int length) {
 	if (index >= streamBuf.length) {
 		return;
@@ -681,6 +695,7 @@ void InsertStreamBuffer(int index, char* data, int length) {
 	return;
 }
 
+// clear all steaming buffers
 void ClearStreamBuffer() {
 	if (streamBuf.length == 0) {
 		return;
@@ -695,6 +710,7 @@ void ClearStreamBuffer() {
 	return;
 }
 
+// add stream buffer to play buffer, called by a thread
 void s_AddStreamBufferToPlayBuffer() {
 	DWORD loadStartOffset = 44;
 	if (startOffset >= endOffset) {
@@ -707,7 +723,7 @@ void s_AddStreamBufferToPlayBuffer() {
 	r = len % MAX_STREAM_BUFFER_SIZE;*/
 	// add play buffer from each stream buffer
 	DWORD n = streamBuf.length;
-	for (DWORD i = (startOffset - 44) / n; i <= n; i++) {
+	for (DWORD i = (startOffset - 44) / n; i < n; i++) {
 		while (streamBuf.list[i].length == 0) {
 			// data not yet arrive stream buffer, sleep for a while
 			Thread::Sleep(10);
@@ -744,4 +760,74 @@ void s_AddStreamBufferToPlayBuffer() {
 		return;
 	}
 	cout << "1::Done all buffer\n";
+}
+
+// consume play buffer, called by a thread
+void s_PlayWavFromBuffer() {
+	wchar_t buf[100];
+	playerState = PLAYING;
+	DWORD len = endOffset - startOffset;
+	DWORD n, r;
+	n = len / MAX_BUFFER_SIZE;
+	r = len % MAX_BUFFER_SIZE;
+	for (int i = 0; i <= n; i++) {
+		printf("player buffer %d\n", i);
+		wchar_t buf[100];
+		while (bufferQueue.size() == 0) {
+			swprintf_s(buf, 100, L"buffer queue size empty\n");
+			OutputDebugString(buf);
+			Thread::Sleep(10);
+		}
+
+		WaveFileBlock wfb = bufferQueue.front();
+		waveOutPrepareHeader(hWaveOut, &wfb.header, sizeof(WAVEHDR));
+		waveOutWrite(hWaveOut, &wfb.header, sizeof(WAVEHDR));
+
+		if (WaitForSingleObject(waitEvent, INFINITE) != WAIT_OBJECT_0) {
+			cout << "Error waiting for sound to finish\n";
+			swprintf_s(buf, 100, L"Error waiting for sound to finish\n");
+			OutputDebugString(buf);
+			//OutputDebugString(L"Error waiting for sound to finish\n");
+		}
+		else {
+			cout << "Sound finished\n";
+			swprintf_s(buf, 100, L"Sound finished\n");
+			OutputDebugString(buf);
+			//OutputDebugString(L"Sound finished\n");
+		}
+
+		if (waveOutUnprepareHeader(hWaveOut, &wfb.header, sizeof(WAVEHDR)) != MMSYSERR_NOERROR) {
+			cout << "Error to unprepare header\n";
+			swprintf_s(buf, 100, L"Error to unprepare header\n");
+			//OutputDebugString(buf);
+			//OutputDebugString(L"Error to unprepare header\n");
+		}
+		else {
+			cout << "Unprepared header\n";
+			swprintf_s(buf, 100, L"Unprepare header\n");
+			//OutputDebugString(buf);
+			//OutputDebugString(L"Error to unprepare header\n");
+		}
+
+		//dumpSoundDataQueue.push_back(wfb.header.lpData);
+		bufferQueue.pop_front();
+		if (playerState == PAUSED) {
+			break;
+		}
+	}
+	if (playerState == PAUSED) {
+		int x = waveOutReset(hWaveOut);
+		wchar_t buf[100];
+		//swprintf_s(buf, 100, L"play buf: size of queue %d\n", bufferQueue.size());
+		//OutputDebugString(buf);
+		while (bufferQueue.size() > 0) {
+			WaveFileBlock wfb2 = bufferQueue.front();
+			//dumpSoundDataQueue.push_back(wfb2.header.lpData);
+			bufferQueue.pop_front();
+		}
+		return;
+	}
+	cout << "2::Done all playing\n";
+	playerState = FINISHED;
+	waveOutReset(hWaveOut);
 }
