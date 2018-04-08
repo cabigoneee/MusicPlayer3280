@@ -1,0 +1,77 @@
+﻿  httpclient.cpp
+c:\users\sheld\desktop\musicplayer3280\testclr\httpclient.cpp(45): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+  httpserver.cpp
+c:\users\sheld\desktop\musicplayer3280\testclr\httpserver.cpp(35): warning C4996: '_open': This function or variable may be unsafe. Consider using _sopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_io.h(388): note: see declaration of '_open'
+c:\users\sheld\desktop\musicplayer3280\testclr\httpserver.cpp(72): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\users\sheld\desktop\musicplayer3280\testclr\httpserver.cpp(95): warning C4996: '_open': This function or variable may be unsafe. Consider using _sopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_io.h(388): note: see declaration of '_open'
+  MP.cpp
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(52): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(60): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(90): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(96): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(286): warning C4244: '=': conversion from 'double' to 'DWORD', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(283): warning C4101: 'buf': unreferenced local variable
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(322): warning C4101: 'buf': unreferenced local variable
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(367): warning C4018: '<=': signed/unsigned mismatch
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(369): warning C4101: 'buf': unreferenced local variable
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(494): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(590): warning C4244: '=': conversion from 'double' to 'DWORD', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\mp.cpp(741): warning C4101: 'buf': unreferenced local variable
+  MyForm.cpp
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(171): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(171): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(171): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(171): note: this warning is based on non-standard semantics used by Visual C++
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(783): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(795): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(832): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(840): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(881): warning C4474: 'swprintf_s' : too many arguments passed for format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(881): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(883): warning C4474: 'swprintf_s' : too many arguments passed for format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(883): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(885): warning C4474: 'swprintf_s' : too many arguments passed for format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(885): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(887): warning C4474: 'swprintf_s' : too many arguments passed for format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(887): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(963): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'System::String ^'
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(986): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'System::String ^'
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(992): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'System::String ^'
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1061): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1061): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1061): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1061): note: this warning is based on non-standard semantics used by Visual C++
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1087): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1087): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1087): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1087): note: this warning is based on non-standard semantics used by Visual C++
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1120): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1120): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1120): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1120): note: this warning is based on non-standard semantics used by Visual C++
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): note: this warning is based on non-standard semantics used by Visual C++
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 2 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1204): note: this warning is based on non-standard semantics used by Visual C++
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): note: this warning is based on non-standard semantics used by Visual C++
+c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): warning C4477: 'swprintf_s' : format string '%s' requires an argument of type 'wchar_t *', but variadic argument 2 has type 'const char *'
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): note: consider using '%hs' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): note: consider using '%Ts' in the format string
+  c:\users\sheld\desktop\musicplayer3280\testclr\myform.h(1206): note: this warning is based on non-standard semantics used by Visual C++
+  Generating Code...
+  .NETFramework,Version=v4.5.2.AssemblyAttributes.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppCommon.targets(673,5): error : Element <SubSystem> has an invalid value of "/SUBSYSTEM:WINDOWS".
