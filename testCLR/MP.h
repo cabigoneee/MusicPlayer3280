@@ -7,7 +7,6 @@
 #define MAX_BUFFER_COUNT 20
 
 #define MAX_STREAM_BUFFER_SIZE (1024 * 256)
-#define MAX_WAIT_ATTEMPT 10
 
 using namespace std;
 
@@ -54,17 +53,13 @@ typedef struct {
 	int length = 0;
 } StreamBuffer;
 
-int s_SelectMusic(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2, int millisecond);
-int s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
+int SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
 int s_SetWaveFormat();
 int s_Playback(int millisecond);
-int s_PauseMusic();
-int s_RestartMusic();
-int s_SkipSecond(int millisecond);
 int s_AddStreamBufferFromTime(int millisecond);
 void s_GetStreamBufferFromSrc(LPVOID args);
-void s_SetStreamBufferListLength(int length);
-void s_InsertStreamBuffer(int index, char* data, int length);
-void s_ClearStreamBuffer();
+void SetStreamBufferListLength(int length);
+void InsertStreamBuffer(int index, char* data, int length);
+void ClearStreamBuffer();
 void s_AddStreamBufferToPlayBuffer();
 void s_PlayWavFromBuffer();
