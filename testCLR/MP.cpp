@@ -24,14 +24,6 @@ char currentFilePath[256];
 
 DWORD t_addBufferId, t_playBufferId, t_dumpBufferId;
 
-///////////// audio streaming part /////////////
-StreamBuffer streamBuf;
-StreamSrcInfo streamSrcInfo[2];
-
-DWORD t_getStreamData1Id, t_getStreamData2Id;
-DWORD t_sAddBufferId, t_sPlayBufferId;
-////////////////////////////////////////////////
-
 int InitMusicPlayer() {
 	hWaveOut = NULL;
 	waitEvent = CreateEvent(NULL, 0, 0, NULL);
@@ -40,8 +32,6 @@ int InitMusicPlayer() {
 	playerState = PREPARING;
 	currentFilePath[0] = '\0';
 	currentPlaybackTime = 0;
-	streamSrcInfo[0].path = "\0";
-	streamSrcInfo[1].path = "\0";
 	return 0;
 }
 
@@ -136,7 +126,6 @@ int OpenFile(const char* path) {
 	fread(type, sizeof(char), 4, fp);
 	if (strncmp(type, "data", 4) != 0) {
 		cout << "Error: Missing data" << endl;
-		return 1;
 	}
 
 	fread(&subchunk2Size, sizeof(DWORD), 1, fp);
@@ -264,8 +253,6 @@ int CloseMusicPlayer() {
 	HANDLE t1 = OpenThread(THREAD_ALL_ACCESS, false, t_addBufferId);
 	HANDLE t2 = OpenThread(THREAD_ALL_ACCESS, false, t_playBufferId);
 	HANDLE t3 = OpenThread(THREAD_ALL_ACCESS, false, t_dumpBufferId);
-	HANDLE t4 = OpenThread(THREAD_ALL_ACCESS, false, t_sAddBufferId);
-	HANDLE t5 = OpenThread(THREAD_ALL_ACCESS, false, t_sPlayBufferId);
 	if (t1 != NULL) {
 		WaitForSingleObject(t1, 10000);
 	}
@@ -275,16 +262,11 @@ int CloseMusicPlayer() {
 	if (t3 != NULL) {
 		WaitForSingleObject(t3, 10000);
 	}
-	if (t4 != NULL) {
-		WaitForSingleObject(t4, 10000);
-	}
-	if (t5 != NULL) {
-		WaitForSingleObject(t5, 10000);
-	}
 	if (fp != NULL) {
 		fclose(fp);
 	}
 	playerState = FINISHED;
+	//DumpSoundData();
 	if (hWaveOut != NULL) {
 		waveOutReset(hWaveOut);
 		int result = waveOutClose(hWaveOut);
@@ -479,6 +461,12 @@ void DumpSoundData() {
 }
 
 ///////////// audio streaming part /////////////
+//char **streamBuf = NULL;
+StreamBuffer streamBuf;
+StreamSrcInfo streamSrcInfo[2];
+
+DWORD t_getStreamData1Id, t_getStreamData2Id;
+DWORD t_sAddBufferId, t_sPlayBufferId;
 
 // arguments pass to get streaming buffer thread
 typedef struct {
@@ -487,16 +475,8 @@ typedef struct {
 	DWORD r;
 } ThreadArgs;
 
-// select music to play with given info
-int s_SelectMusic(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2, int millisecond) {
-	if (s_SetStreamSrcInfo(server1_ip, port1, path1, server2_ip, port2, path2) != 0) {
-		return 1;
-	}
-	return s_Playback(millisecond);
-}
-
 // set streaming source info for a remote wave file, limited to exactly 2 sources
-int s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2) {
+int SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2) {
 	streamSrcInfo[0].server_ip = server1_ip;
 	streamSrcInfo[0].port = port1;
 	streamSrcInfo[0].path = path1;
@@ -611,70 +591,16 @@ int s_Playback(int millisecond) {
 		return 1;
 	}
 	s_AddStreamBufferFromTime(millisecond);
+	//Thread::Sleep(5000);
 	HANDLE t1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_AddStreamBufferToPlayBuffer, NULL, 0, &t_sAddBufferId);
 	HANDLE t2 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_PlayWavFromBuffer, NULL, 0, &t_sPlayBufferId);
 	return 0;
-}
-
-// pause streaming music when the music is being played
-int s_PauseMusic() {
-	if (hWaveOut == NULL) {
-		return 1;
-	}
-	if (playerState != PLAYING) {
-		return 1;
-	}
-	currentPlaybackTime += GetCurrentPlaybackTimeFromStartPoint();
-	playerState = PAUSED;
-	HANDLE t1 = OpenThread(THREAD_ALL_ACCESS, false, t_sAddBufferId);
-	HANDLE t2 = OpenThread(THREAD_ALL_ACCESS, false, t_sPlayBufferId);
-	if (t1 != NULL) {
-		WaitForSingleObject(t1, 10000);
-	}
-	if (t2 != NULL) {
-		WaitForSingleObject(t2, 10000);
-	}
-	return 0;
-}
-
-// restart streaming music when music is paused
-int s_RestartMusic() {
-	if (hWaveOut == NULL) {
-		return 1;
-	}
-	if (playerState != PAUSED) {
-		return 1;
-	}
-	if (streamSrcInfo[0].path[0] == '\0' || streamSrcInfo[1].path[0] == '\0' ) {
-		return 1;
-	}
-	s_Playback(currentPlaybackTime);
-	return 0;
-}
-
-// skip time in millisecond from the current play time
-int s_SkipSecond(int millisecond) {
-	if (playerState == PLAYING) {
-		//PauseMusic();
-		int newPlaybackTime = millisecond + currentPlaybackTime + GetCurrentPlaybackTimeFromStartPoint();
-		if (newPlaybackTime < 0 || newPlaybackTime >= GetTotalDuration()) {
-			return 1;
-		}
-		s_PauseMusic();
-		currentPlaybackTime = newPlaybackTime;
-		if (streamSrcInfo[0].path[0] != '\0' && streamSrcInfo[1].path[0] != '\0') {
-			s_Playback(newPlaybackTime);
-			return 0;
-		}
-	}
-	return 1;
 }
 
 // load the buffer from the starting time, leaving the buffers of the skipped sections empty
 int s_AddStreamBufferFromTime(int millisecond) {
 	DWORD loadStartOffset = 44;
 	startOffset = waveFormat.nAvgBytesPerSec * (millisecond / 1000.0) + 44;
-	startOffset = (startOffset % 2 == 0) ? startOffset : startOffset - 1;
 	endOffset = fileSize;
 	if (startOffset >= endOffset) {
 		return 1;
@@ -685,7 +611,23 @@ int s_AddStreamBufferFromTime(int millisecond) {
 	n = len / MAX_STREAM_BUFFER_SIZE;
 	r = len % MAX_STREAM_BUFFER_SIZE;
 
-	s_SetStreamBufferListLength(n + 1);
+	SetStreamBufferListLength(n + 1);
+	//FILE* log = fopen("buflog.txt", "w");
+	/*for (int i = (startOffset - 44) / n; i <= n; i++) {
+	DWORD bufLen = (i < n) ? MAX_STREAM_BUFFER_SIZE : r;
+	char* data = new char[bufLen];
+	if (get_data(streamSrcInfo[0].server_ip, streamSrcInfo[0].port, streamSrcInfo[0].path, curOffset, bufLen, data) != 0) {
+	int t = 10;
+	//i++;
+	//return 1;
+	break;
+	}
+	//fwrite(data, sizeof(char), bufLen, log);
+	//fclose(log);
+	InsertStreamBuffer(i, data, bufLen);
+	delete data;
+	curOffset += bufLen;
+	}*/
 	ThreadArgs *t1Args = new ThreadArgs;
 	t1Args->remote_no = 0;
 	t1Args->n = n;
@@ -707,17 +649,20 @@ void s_GetStreamBufferFromSrc(LPVOID args) {
 	DWORD r = tArgs->r;
 	int remoteNo = tArgs->remote_no;
 	DWORD curOffset = startOffset;
-	for (DWORD i = (startOffset - 44) / MAX_STREAM_BUFFER_SIZE; i <= n; i++) {
+	for (DWORD i = (startOffset - 44) / n; i <= n; i++) {
 		DWORD bufLen = (i < n) ? MAX_STREAM_BUFFER_SIZE : r;
 		if (i % 2 == remoteNo) {			// 2 is the number of remote PCs
 			char* data = new char[bufLen];
 			if (get_data(streamSrcInfo[remoteNo].server_ip, streamSrcInfo[remoteNo].port,
 				streamSrcInfo[remoteNo].path, curOffset, bufLen, data) != 0) {
+				int t = 10;
+				//i++;
+				//return 1;
 				break;
 			}
 			//fwrite(data, sizeof(char), bufLen, log);
 			//fclose(log);
-			s_InsertStreamBuffer(i, data, bufLen);
+			InsertStreamBuffer(i, data, bufLen);
 			delete data;
 		}
 		curOffset += bufLen;
@@ -726,14 +671,14 @@ void s_GetStreamBufferFromSrc(LPVOID args) {
 }
 
 // initialize buffer list with length specified for new wav to read
-void s_SetStreamBufferListLength(int length) {
-	s_ClearStreamBuffer();
+void SetStreamBufferListLength(int length) {
+	ClearStreamBuffer();
 	streamBuf.length = length;
 	streamBuf.list = new BufElem[length];
 }
 
 // insert streaming data into specified index
-void s_InsertStreamBuffer(int index, char* data, int length) {
+void InsertStreamBuffer(int index, char* data, int length) {
 	if (index >= streamBuf.length) {
 		return;
 	}
@@ -751,7 +696,7 @@ void s_InsertStreamBuffer(int index, char* data, int length) {
 }
 
 // clear all steaming buffers
-void s_ClearStreamBuffer() {
+void ClearStreamBuffer() {
 	if (streamBuf.length == 0) {
 		return;
 	}
@@ -778,16 +723,10 @@ void s_AddStreamBufferToPlayBuffer() {
 	r = len % MAX_STREAM_BUFFER_SIZE;*/
 	// add play buffer from each stream buffer
 	DWORD n = streamBuf.length;
-	for (DWORD i = (startOffset - 44) / MAX_STREAM_BUFFER_SIZE; i < n; i++) {
-		int attempt = 0;		// attempt to try to get streaming data from source
+	for (DWORD i = (startOffset - 44) / n; i < n; i++) {
 		while (streamBuf.list[i].length == 0) {
 			// data not yet arrive stream buffer, sleep for a while
-			attempt++;
-			Thread::Sleep(1000);
-			if (attempt >= MAX_WAIT_ATTEMPT) {
-				// cannot get the data, return function and terminate the thread
-				return;
-			}
+			Thread::Sleep(10);
 		}
 		DWORD totalBlock = streamBuf.list[i].length / MAX_BUFFER_SIZE;
 		DWORD remainSize = streamBuf.list[i].length % MAX_BUFFER_SIZE;
@@ -891,6 +830,4 @@ void s_PlayWavFromBuffer() {
 	cout << "2::Done all playing\n";
 	playerState = FINISHED;
 	waveOutReset(hWaveOut);
-	streamSrcInfo[0].path = "\0";
-	streamSrcInfo[1].path = "\0";
 }
