@@ -25,7 +25,7 @@ namespace testCLR {
 		bool playing = 0;
 		bool mute = 0;
 		bool streamMode = 0;
-		int playingSongIndex;
+		int playingSongIndex = 0;
 		int soundTrackBarIndex;
 		BackgroundWorker m_oWorker;
 	private: System::Windows::Forms::DataGridView^  dataGridView1;
@@ -36,27 +36,8 @@ namespace testCLR {
 	private: System::Windows::Forms::Button^  button9;
 	private: System::Windows::Forms::Button^  button10;
 	private: System::Windows::Forms::TextBox^  textBox1;
-
-
-
-
-
-
-
 	private: System::Windows::Forms::TextBox^  textBox2;
-
 	private: System::Windows::Forms::Label^  label5;
-
-
-
-
-
-
-
-
-
-
-
 	private: System::Windows::Forms::Button^  button11;
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  label7;
@@ -67,7 +48,6 @@ namespace testCLR {
 	private: System::Windows::Forms::TextBox^  textBox5;
 	private: System::Windows::Forms::TextBox^  textBox6;
 	private: System::Windows::Forms::Button^  button12;
-
 	private: System::Windows::Forms::Button^  button13;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column2;
@@ -82,28 +62,7 @@ namespace testCLR {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column10;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column12;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column13;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	private: System::Windows::Forms::Timer^  timer1;
 
 	public:
 		float currentTime = 0;
@@ -207,7 +166,7 @@ namespace testCLR {
 						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
 						OutputDebugString(buf);
 
-						if (index >= 1 && index <= 12 && rowCtr != 0) {
+						if (index >= 1 && index <= 13 && rowCtr != 0) {
 							System::String^ strNew = gcnew String(songBuffer[index].c_str());
 							if (index == 5) {
 								dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = "Local";
@@ -217,10 +176,16 @@ namespace testCLR {
 							}
 						}
 
+
 						index++;
 
 					}
-
+					if (rowCtr != 0) {
+						dataGridView1->Rows[rowIndex]->Cells[9]->Value = "-";
+						dataGridView1->Rows[rowIndex]->Cells[10]->Value = "-";
+						dataGridView1->Rows[rowIndex]->Cells[11]->Value = "-";
+						dataGridView1->Rows[rowIndex]->Cells[12]->Value = "-";
+					}
 					wchar_t buf[100];
 					swprintf_s(buf, 100, L"\n");
 					OutputDebugString(buf);
@@ -236,6 +201,86 @@ namespace testCLR {
 			//cout << "Closing MyDb.db ..." << endl;
 			sqlite3_close(db);
 			//cout << "Closed MyDb.db" << endl << endl;
+
+			//save local database to tempDB
+			const char* sql;
+			rc = sqlite3_open("localTemp.db", &db);
+
+			/* Create Table */
+			sql = "CREATE TABLE Song(  \
+				songID     INTEGER      PRIMARY KEY AUTOINCREMENT \
+										UNIQUE \
+										NOT NULL, \
+				Title      VARCHAR(50)  NOT NULL \
+										DEFAULT None, \
+				Artist     VARCHAR(50)  DEFAULT None, \
+				Album      VARCHAR(50)  DEFAULT None, \
+				Duration   VARCHAR(20)  NOT NULL, \
+				Location   VARCHAR(20), \
+				songPath   VARCHAR(255) NOT NULL, \
+				lyricsPath VARCHAR(255), \
+				imagePath  VARCHAR(255), \
+				checksum   VARCHAR(255) NOT NULL, \
+				remoteIP1  VARCHAR(20)  NOT NULL, \
+				port1      INTEGER, \
+				remoteIP2  VARCHAR(20), \
+				port2      INTEGER);";
+			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+
+			//clear all old datum
+			sql = "DELETE FROM Song;";
+			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+			sql = "DELETE FROM sqlite_sequence where name='Song';"; //reset primary key
+			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+
+			//insert each datum
+			string title, artist, album, duration, location, songPath, lyricsPath, imagePath;
+			string checksum, remoteIP1, remoteIP2, port1, port2;
+			for (int i = 0; i < dataGridView1->Rows->Count; i++) {
+				System::String^ _title = dataGridView1->Rows[i]->Cells[0]->Value->ToString();
+				System::String^ _artist = dataGridView1->Rows[i]->Cells[1]->Value->ToString();
+				System::String^ _album = dataGridView1->Rows[i]->Cells[2]->Value->ToString();
+				System::String^ _duration = dataGridView1->Rows[i]->Cells[3]->Value->ToString();
+				System::String^ _location = dataGridView1->Rows[i]->Cells[4]->Value->ToString();
+				System::String^ _songPath = dataGridView1->Rows[i]->Cells[5]->Value->ToString();
+				System::String^ _lyricsPath = dataGridView1->Rows[i]->Cells[6]->Value->ToString();
+				System::String^ _imagePath = dataGridView1->Rows[i]->Cells[7]->Value->ToString();
+				System::String^ _checksum = dataGridView1->Rows[i]->Cells[8]->Value->ToString();
+				//System::String^ _remoteIP1 = dataGridView1->Rows[i]->Cells[9]->Value->ToString();
+				//System::String^ _port1 = dataGridView1->Rows[i]->Cells[10]->Value->ToString();
+				//System::String^ _remoteIP2 = dataGridView1->Rows[i]->Cells[11]->Value->ToString();
+				//System::String^ _port2 = dataGridView1->Rows[i]->Cells[12]->Value->ToString();
+
+				MarshalString(_title, title);
+				MarshalString(_artist, artist);
+				MarshalString(_album, album);
+				MarshalString(_duration, duration);
+				MarshalString(_location, location);
+				MarshalString(_songPath, songPath);
+				MarshalString(_lyricsPath, lyricsPath);
+				MarshalString(_imagePath, imagePath);
+				MarshalString(_checksum, checksum);
+				//MarshalString(_remoteIP1, remoteIP1);
+				//MarshalString(_remoteIP2, remoteIP2);
+				//MarshalString(_port1, port1);
+				//MarshalString(_port2, port2);
+
+				string fullPara;
+				fullPara = "INSERT INTO Song VALUES (NULL, '" + title + "', '" + artist + "', '" + album + "', '"
+					+ duration + "', '" + location + "', '" + songPath + "', '" + lyricsPath + "', '"
+					+ imagePath + "', '" + checksum + "', '" 
+					//+ remoteIP1 + "', '" + port1 + "', '" + remoteIP2 + "', '" + port2 + "');'"; for now, there is no such field in songDB.db
+					+ "-" + "', '" + "-" + "', '" + "-" + "', '" + "-" + "');'";
+				sql = fullPara.c_str();
+				rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+				wchar_t buf[500];
+				swprintf_s(buf, 500, L"Sql Parameter: %s\n", sql);
+				OutputDebugString(buf);
+
+			}
+
+			sqlite3_close(db);
+
 
 			//streaming as host automatically when the application startes
 			int hostSetup = startDaemon();
@@ -277,13 +322,14 @@ namespace testCLR {
 	private: System::Windows::Forms::Button^  button6;
 	private: System::Windows::Forms::TrackBar^  trackBar1;
 	private: System::Windows::Forms::TrackBar^  trackBar2;
+private: System::ComponentModel::IContainer^  components;
 	protected:
 
 	private:
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -292,6 +338,7 @@ namespace testCLR {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
@@ -338,6 +385,7 @@ namespace testCLR {
 			this->textBox6 = (gcnew System::Windows::Forms::TextBox());
 			this->button12 = (gcnew System::Windows::Forms::Button());
 			this->button13 = (gcnew System::Windows::Forms::Button());
+			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
@@ -423,6 +471,7 @@ namespace testCLR {
 			this->trackBar1->TabIndex = 6;
 			this->trackBar1->TabStop = false;
 			this->trackBar1->TickStyle = System::Windows::Forms::TickStyle::None;
+			this->trackBar1->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::trackBar_Released);
 			// 
 			// button4
 			// 
@@ -585,9 +634,9 @@ namespace testCLR {
 			this->label3->AutoSize = true;
 			this->label3->Location = System::Drawing::Point(442, 114);
 			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(51, 12);
+			this->label3->Size = System::Drawing::Size(26, 12);
 			this->label3->TabIndex = 12;
-			this->label3->Text = L"TimeNow";
+			this->label3->Text = L"0:00";
 			// 
 			// label4
 			// 
@@ -789,6 +838,11 @@ namespace testCLR {
 			this->button13->UseVisualStyleBackColor = true;
 			this->button13->Visible = false;
 			// 
+			// timer1
+			// 
+			this->timer1->Interval = 1000;
+			this->timer1->Tick += gcnew System::EventHandler(this, &MyForm::timer1_Tick);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
@@ -851,6 +905,7 @@ namespace testCLR {
 			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button9.BackgroundImage")));
 
 			PauseMusic();
+			timer1->Stop();
 			//ClosePlayer();			
 		}
 		else {
@@ -872,11 +927,12 @@ namespace testCLR {
 			if (String::Compare(selectedSong, currentSong) == 0) {
 				//same
 				RestartMusic();
+				timer1->Start();
 			}
 			else {
 				//not same
 				//update info first before playing the song
-				updateSongInfo();
+				//updateSongInfo();
 
 				System::String^ selectedSongPath;
 				selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
@@ -885,6 +941,8 @@ namespace testCLR {
 
 				playingSongIndex = dataGridView1->SelectedCells[0]->RowIndex;
 				SelectMusic(songPath.c_str()); // convert string to char*
+
+				updateSongInfo();
 			}
 			playing = 1;
 		}
@@ -961,42 +1019,48 @@ namespace testCLR {
 	}
 
 	private: System::Void Next_Click(System::Object^  sender, System::EventArgs^  e) {
-		playingSongIndex++;
+		if (playingSongIndex != dataGridView1->Rows->Count - 1) {
+			playingSongIndex++;
 
-		System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
-		string songPath;
-		MarshalString(selectedSongPath, songPath);
+			System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
+			string songPath;
+			MarshalString(selectedSongPath, songPath);
 
-		SelectMusic(songPath.c_str()); // convert string to char*
-		playing = 1;
+			SelectMusic(songPath.c_str()); // convert string to char*
+			playing = 1;
 
-		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
-		button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
 
-		dataGridView1->CurrentCell = dataGridView1->Rows[playingSongIndex]->Cells[0];
+			dataGridView1->CurrentCell = dataGridView1->Rows[playingSongIndex]->Cells[0];
 
-		updateSongInfo();
+			updateSongInfo();
+		}
 	}
 
 	private: System::Void Previous_Click(System::Object^  sender, System::EventArgs^  e) {
-		playingSongIndex--;
+		if (playingSongIndex != 0) {
+			playingSongIndex--;
 
-		System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
-		string songPath;
-		MarshalString(selectedSongPath, songPath);
+			System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
+			string songPath;
+			MarshalString(selectedSongPath, songPath);
 
-		SelectMusic(songPath.c_str()); // convert string to char*
-		playing = 1;
+			SelectMusic(songPath.c_str()); // convert string to char*
+			playing = 1;
 
-		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
-		button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button10.BackgroundImage")));
 
-		dataGridView1->CurrentCell = dataGridView1->Rows[playingSongIndex]->Cells[0];
+			dataGridView1->CurrentCell = dataGridView1->Rows[playingSongIndex]->Cells[0];
 
-		updateSongInfo();
+			updateSongInfo();
+		}		
 	}
 
 	private: void updateSongInfo() {
+		timer1->Stop();
+
 		System::String^ selectedSongTitle;
 		selectedSongTitle = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[0]->Value->ToString();
 		label1->Text = selectedSongTitle;
@@ -1018,16 +1082,24 @@ namespace testCLR {
 
 		label4->Text = strNew;
 
+		//update trackBar's total number of ticks = total seconds of song
+		trackBar1->Maximum = selectedSongDuration;
+		trackBar1->Value = 0;
+
+		wchar_t buf[100];
+		swprintf_s(buf, 100, L"Total number of tick of trackBar = %d\n ", selectedSongDuration);
+		OutputDebugString(buf);
+
 		//update image 
 		System::String^ selectedImagePath;
 		selectedImagePath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[7]->Value->ToString();
 		/*
 		if (String::Compare(selectedImagePath, "null") == 0) {
-			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
-			pictureBox1->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button13.BackgroundImage")));
+		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+		pictureBox1->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button13.BackgroundImage")));
 		}
 		else {
-			pictureBox1->BackgroundImage = Image::FromFile(selectedImagePath);
+		pictureBox1->BackgroundImage = Image::FromFile(selectedImagePath);
 		}
 		*/
 		try
@@ -1086,14 +1158,7 @@ namespace testCLR {
 			}
 		}
 
-		bgTimer();
-	}
-
-	private: void bgTimer() {
-		//a background worker that keeps track of song progress bar
-
-
-
+		timer1->Start();
 	}
 
 	private: System::Void Volume_Select(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
@@ -1131,7 +1196,7 @@ namespace testCLR {
 			MarshalString(searchedParameter, parameter);
 
 			sqlite3 *db;
-			int rc = sqlite3_open("songDB.db", &db);
+			int rc = sqlite3_open("localTemp.db", &db);
 			char *error;
 
 			if (rc)
@@ -1143,7 +1208,7 @@ namespace testCLR {
 			}
 			else
 			{
-				swprintf_s(buf, 100, L"Search Bar: Opened songDB.db.\n");
+				swprintf_s(buf, 100, L"Search Bar: Opened localTemp.db.\n");
 				OutputDebugString(buf);
 			}
 
@@ -1157,7 +1222,7 @@ namespace testCLR {
 			else {
 				string para1 = "SELECT * FROM song WHERE";
 				fullPara = para1;
-				string column[11] = { "Title", "Artist", "Album", "Duration", "Location", "songPath", "lyricsPath", "imagePath", "remoteIP", "port", "checksum" };
+				string column[11] = { "Title", "Artist", "Album", "Duration", "Location", "songPath", "lyricsPath", "imagePath", "remoteIP1", "port1", "checksum" };
 				for (int i = 0; i < 11; i++) {
 					string likePara = "'%" + parameter + "%'";
 					fullPara = fullPara + " " + column[i] + " LIKE " + likePara;
@@ -1187,7 +1252,7 @@ namespace testCLR {
 				// Display Table
 				for (int rowCtr = 0; rowCtr <= rows; ++rowCtr)
 				{
-					string songBuffer[12];
+					string songBuffer[14];
 					int index = 0;
 					int rowIndex = 0;
 					if (rowCtr != 0) {
@@ -1209,14 +1274,9 @@ namespace testCLR {
 						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
 						OutputDebugString(buf);
 
-						if (index >= 1 && index <= 12 && rowCtr != 0) {
+						if (index >= 1 && index <= 13 && rowCtr != 0) {
 							System::String^ strNew = gcnew String(songBuffer[index].c_str());
-							if (index == 5) {
-								dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = "Local";
-							}
-							else {
-								dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = strNew;
-							}
+							dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = strNew;
 						}
 
 						index++;
@@ -1273,65 +1333,73 @@ namespace testCLR {
 	}
 	private: System::Void Connect_Click(System::Object^  sender, System::EventArgs^  e) {
 
+		//stop local music first to avoid crashing between local buffer and stream buffer
+		PauseMusic();
+
+		//check if users have input all four values
+		bool valid = true;
+		System::String^ IP_PC1 = textBox3->Text;
+		System::String^ port_PC1 = textBox5->Text;
+		System::String^ IP_PC2 = textBox4->Text;
+		System::String^ port_PC2 = textBox6->Text;
+		if (String::IsNullOrWhiteSpace(IP_PC1) || String::IsNullOrWhiteSpace(IP_PC2) 
+			|| String::IsNullOrWhiteSpace(port_PC1) || String::IsNullOrWhiteSpace(port_PC2)) {
+			valid = false;
+		}
+
 		textBox1->Text = "";
 		textBox1->Visible = true;
-		textBox1->AppendText("input received! Now test connection\n");
-
-		System::String^ IP_PC1;
-		IP_PC1 = textBox3->Text;
-		string IPPC1;
-		MarshalString(IP_PC1, IPPC1);
-
-		System::String^ port_PC1;
-		port_PC1 = textBox5->Text;
-		string portPC1;
-		MarshalString(port_PC1, portPC1);
-
-		System::String^ IP_PC2;
-		IP_PC2 = textBox4->Text;
-		string IPPC2;
-		MarshalString(IP_PC2, IPPC2);
-
-		System::String^ port_PC2;
-		port_PC2 = textBox6->Text;
-		string portPC2;
-		MarshalString(port_PC2, portPC2);
-
-		wchar_t buf[100];
-		swprintf_s(buf, 100, L"PC1's IP: %s:%s\n ", IPPC1.c_str(), portPC1.c_str());
-		OutputDebugString(buf);
-		swprintf_s(buf, 100, L"PC2's IP: %s:%s\n ", IPPC2.c_str(), portPC2.c_str());
-		OutputDebugString(buf);
-
-		int connection1 = test_connection(IPPC1.c_str(), stoi(portPC1));
-		int connection2 = test_connection(IPPC2.c_str(), stoi(portPC2));
-
-		if (connection1 == 0 && connection2 == 0) {
-			//both success
-			textBox1->AppendText("Connection Success\n!");
-			swprintf_s(buf, 100, L"Connection Completed!\n");
-			OutputDebugString(buf);
-
-			UpdateDatabase(IPPC1.c_str(), stoi(portPC1), IPPC2.c_str(), stoi(portPC1));
-		}
-		else if (connection1 == 0 && connection2 != 0) {
-			textBox1->AppendText("Fail to connect to PC2.\n");
-			swprintf_s(buf, 100, L"Failed to connect to PC2\n");
-			OutputDebugString(buf);
-		}
-		else if (connection1 != 0 && connection2 == 0) {
-			textBox1->AppendText("Fail to connect to PC1.\n");
-			swprintf_s(buf, 100, L"Failed to connect to PC1\n");
-			OutputDebugString(buf);
+		if (!valid) {
+			textBox1->AppendText("One of the field is missing, Please input again.\n");
 		}
 		else {
-			textBox1->AppendText("Fail to connect both.\n");
-			swprintf_s(buf, 100, L"Failed to connect to both PC1 and PC2\n");
+			textBox1->AppendText("input received! Now test connection\n");
+
+			string IPPC1;
+			MarshalString(IP_PC1, IPPC1);
+
+			string portPC1;
+			MarshalString(port_PC1, portPC1);
+
+			string IPPC2;
+			MarshalString(IP_PC2, IPPC2);
+
+			string portPC2;
+			MarshalString(port_PC2, portPC2);
+
+			wchar_t buf[100];
+			swprintf_s(buf, 100, L"PC1's IP: %s:%s\n ", IPPC1.c_str(), portPC1.c_str());
 			OutputDebugString(buf);
+			swprintf_s(buf, 100, L"PC2's IP: %s:%s\n ", IPPC2.c_str(), portPC2.c_str());
+			OutputDebugString(buf);
+
+			int connection1 = test_connection(IPPC1.c_str(), stoi(portPC1));
+			int connection2 = test_connection(IPPC2.c_str(), stoi(portPC2));
+
+			if (connection1 == 0 && connection2 == 0) {
+				//both success
+				textBox1->AppendText("Connection Success\n!");
+				swprintf_s(buf, 100, L"Connection Completed!\n");
+				OutputDebugString(buf);
+
+				UpdateDatabase(IPPC1.c_str(), stoi(portPC1), IPPC2.c_str(), stoi(portPC1));
+			}
+			else if (connection1 == 0 && connection2 != 0) {
+				textBox1->AppendText("Fail to connect to PC2.\n");
+				swprintf_s(buf, 100, L"Failed to connect to PC2\n");
+				OutputDebugString(buf);
+			}
+			else if (connection1 != 0 && connection2 == 0) {
+				textBox1->AppendText("Fail to connect to PC1.\n");
+				swprintf_s(buf, 100, L"Failed to connect to PC1\n");
+				OutputDebugString(buf);
+			}
+			else {
+				textBox1->AppendText("Fail to connect both.\n");
+				swprintf_s(buf, 100, L"Failed to connect to both PC1 and PC2\n");
+				OutputDebugString(buf);
+			}
 		}
-
-		
-
 	}
 
 	private: void UpdateDatabase(const char* IP1, int port1, const char* IP2, int port2) {
@@ -1447,6 +1515,15 @@ namespace testCLR {
 							else {
 								dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = strNew;
 							}
+						}
+
+						if (rowCtr != 0) {
+							System::String^ strIP1 = gcnew String(IP1);
+							System::String^ strPort1 = gcnew String(to_string(port1).c_str());
+							dataGridView1->Rows[rowIndex]->Cells[9]->Value = strIP1;
+							dataGridView1->Rows[rowIndex]->Cells[10]->Value = strPort1;
+							dataGridView1->Rows[rowIndex]->Cells[11]->Value = "-";
+							dataGridView1->Rows[rowIndex]->Cells[12]->Value = "-";
 						}
 
 						wchar_t buf[100];
@@ -1605,6 +1682,15 @@ namespace testCLR {
 							}
 						}
 
+						if (rowCtr != 0) {
+							System::String^ strIP2 = gcnew String(IP2);
+							System::String^ strPort2 = gcnew String(to_string(port2).c_str());
+							dataGridView1->Rows[rowIndex]->Cells[9]->Value = strIP2;
+							dataGridView1->Rows[rowIndex]->Cells[10]->Value = strPort2;
+							dataGridView1->Rows[rowIndex]->Cells[11]->Value = "-";
+							dataGridView1->Rows[rowIndex]->Cells[12]->Value = "-";
+						}
+
 						wchar_t buf[100];
 						//swprintf_s(buf, 100, L"%s ", results[cellPosition]);
 						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
@@ -1660,8 +1746,19 @@ namespace testCLR {
 								break;
 							}
 						}
-					}				
-
+					}
+				}
+				//delete remote songs without 2 sources
+				for (int i = dataGridView1->Rows->Count - localRows - 1; i >= 0; i--) {
+					//check the column "remoteIP2"
+					swprintf_s(buf, 100, L"checking row %d:\n ", i + localRows);
+					System::String^ remoteIP2Str = dataGridView1->Rows[i + localRows]->Cells[12]->Value->ToString();
+					OutputDebugString(buf);
+					if (String::IsNullOrWhiteSpace(remoteIP2Str)) {
+						dataGridView1->Rows->Remove(dataGridView1->Rows[i + localRows]);
+						swprintf_s(buf, 100, L"deleted Row: %d because it has only one remote source\n ", i + localRows);
+						OutputDebugString(buf);
+					}
 				}
 			}
 			sqlite3_free_table(results);
@@ -1670,16 +1767,144 @@ namespace testCLR {
 			//cout << "Closing MyDb.db ..." << endl;
 			sqlite3_close(db);
 
+			//save local database to tempDB
+			const char* sql;
+			rc = sqlite3_open("localTemp.db", &db);
 
-			
-			//dataGridView1->Rows[3]->Cells[11]->Value = dataGridView1->Rows[5]->Cells[9]->Value->ToString();
-			//dataGridView1->Rows[3]->Cells[12]->Value = dataGridView1->Rows[5]->Cells[10]->Value->ToString();
-			//dataGridView1->Rows->Remove(dataGridView1->Rows[5]);
+			/* Create Table */
+			sql = "CREATE TABLE Song(  \
+				songID     INTEGER      PRIMARY KEY AUTOINCREMENT \
+										UNIQUE \
+										NOT NULL, \
+				Title      VARCHAR(50)  NOT NULL \
+										DEFAULT None, \
+				Artist     VARCHAR(50)  DEFAULT None, \
+				Album      VARCHAR(50)  DEFAULT None, \
+				Duration   VARCHAR(20)  NOT NULL, \
+				Location   VARCHAR(20), \
+				songPath   VARCHAR(255) NOT NULL, \
+				lyricsPath VARCHAR(255), \
+				imagePath  VARCHAR(255), \
+				checksum   VARCHAR(255) NOT NULL, \
+				remoteIP1  VARCHAR(20)  NOT NULL, \
+				port1      INTEGER, \
+				remoteIP2  VARCHAR(20), \
+				port2      INTEGER);";
+			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+
+			//clear all old datum
+			sql = "DELETE FROM Song;";
+			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+			sql = "DELETE FROM sqlite_sequence where name='Song';"; //reset primary key
+			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+
+			//insert each datum
+			string title, artist, album, duration, location, songPath, lyricsPath, imagePath;
+			string checksum, remoteIP1, remoteIP2, port1, port2;
+			for (int i = 0; i < dataGridView1->Rows->Count; i++) {
+				System::String^ _title = dataGridView1->Rows[i]->Cells[0]->Value->ToString();
+				System::String^ _artist = dataGridView1->Rows[i]->Cells[1]->Value->ToString();
+				System::String^ _album = dataGridView1->Rows[i]->Cells[2]->Value->ToString();
+				System::String^ _duration = dataGridView1->Rows[i]->Cells[3]->Value->ToString();
+				System::String^ _location = dataGridView1->Rows[i]->Cells[4]->Value->ToString();
+				System::String^ _songPath = dataGridView1->Rows[i]->Cells[5]->Value->ToString();
+				System::String^ _lyricsPath = dataGridView1->Rows[i]->Cells[6]->Value->ToString();
+				System::String^ _imagePath = dataGridView1->Rows[i]->Cells[7]->Value->ToString();
+				System::String^ _checksum = dataGridView1->Rows[i]->Cells[8]->Value->ToString();
+				System::String^ _remoteIP1 = dataGridView1->Rows[i]->Cells[9]->Value->ToString();
+				System::String^ _port1 = dataGridView1->Rows[i]->Cells[10]->Value->ToString();
+				System::String^ _remoteIP2 = dataGridView1->Rows[i]->Cells[11]->Value->ToString();
+				System::String^ _port2 = dataGridView1->Rows[i]->Cells[12]->Value->ToString();
+
+				MarshalString(_title, title);
+				MarshalString(_artist, artist);
+				MarshalString(_album, album);
+				MarshalString(_duration, duration);
+				MarshalString(_location, location);
+				MarshalString(_songPath, songPath);
+				MarshalString(_lyricsPath, lyricsPath);
+				MarshalString(_imagePath, imagePath);
+				MarshalString(_checksum, checksum);
+				MarshalString(_remoteIP1, remoteIP1);
+				MarshalString(_remoteIP2, remoteIP2);
+				MarshalString(_port1, port1);
+				MarshalString(_port2, port2);
+
+				string fullPara;
+				fullPara = "INSERT INTO Song VALUES (NULL, '" + title + "', '" + artist + "', '" + album + "', '"
+					+ duration + "', '" + location + "', '" + songPath + "', '" + lyricsPath + "', '"
+					+ imagePath + "', '" + checksum + "', '" + remoteIP1 + "', '" + port1 + "', '"
+					+ remoteIP2 + "', '" + port2 + "');'"; //for now, there is no such field in songDB.db
+														   //+ "-" + "', '" + "-" + "');'";
+				sql = fullPara.c_str();
+				rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+				wchar_t buf[500];
+				swprintf_s(buf, 500, L"Sql Parameter: %s\n", sql);
+				OutputDebugString(buf);
+
+			}
+
+			sqlite3_close(db);
 
 		}
 
 		textBox1->AppendText("Updating Song Table......\n");
 		textBox1->AppendText("Streaming Setup Completed !! \n");
+	}
+
+	//this timer ticks every 1 second
+	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
+
+		//Update time now label
+		int timeNow = GetCurrentPlaybackTime() / 1000;
+		int minute = timeNow / 60;
+		int second = timeNow % 60;
+
+		string divider = ":";
+		if (second < 10) {
+			divider = ":0";
+		}
+		string songDuration = std::to_string(minute) + divider + std::to_string(second);//int to ^str
+		System::String^ strNew = gcnew String(songDuration.c_str());
+
+		label3->Text = strNew;
+
+		//Update trackBar's tick
+		if (trackBar1->Value != trackBar1->Maximum - 1) {
+			trackBar1->Value = timeNow;
+		}
+		else {
+			timer1->Stop();
+			PauseMusic();
+
+			playing = 0;
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button9.BackgroundImage")));
+			PauseMusic();
+			timer1->Stop();
+		}
+	}
+
+	private: System::Void trackBar_Released(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+		
+		int timeTrackBar = trackBar1->Value;
+		System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
+		string songPath;
+		MarshalString(selectedSongPath, songPath);
+
+		PauseMusic();
+		//SelectMusic(songPath.c_str());
+		//PauseMusic();
+		OpenFile(songPath.c_str());
+		Playback(timeTrackBar * 1000);
+		//PauseMusic();
+		//Sleep(500);
+		//RestartMusic();
+		//PlayMusic(songPath.c_str(), timeTrackBar * 1000);
+
+		wchar_t buf[100];
+		swprintf_s(buf, 100, L"The time of the trackBar = %d\n ", timeTrackBar * 1000);
+		OutputDebugString(buf);
 	}
 };
 }
