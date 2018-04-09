@@ -24,6 +24,15 @@ char currentFilePath[256];
 
 DWORD t_addBufferId, t_playBufferId, t_dumpBufferId;
 
+///////////// audio streaming part /////////////
+//char **streamBuf = NULL;
+StreamBuffer streamBuf;
+StreamSrcInfo streamSrcInfo[2];
+
+DWORD t_getStreamData1Id, t_getStreamData2Id;
+DWORD t_sAddBufferId, t_sPlayBufferId, t_sDumpBufferId;
+////////////////////////////////////////////////
+
 int InitMusicPlayer() {
 	hWaveOut = NULL;
 	waitEvent = CreateEvent(NULL, 0, 0, NULL);
@@ -31,6 +40,8 @@ int InitMusicPlayer() {
 	fileSize = 0;
 	playerState = PREPARING;
 	currentFilePath[0] = '\0';
+	streamSrcInfo[0].path = "\0";
+	streamSrcInfo[1].path = "\0";
 	currentPlaybackTime = 0;
 	return 0;
 }
@@ -54,7 +65,10 @@ int GetCurrentPlaybackTimeFromStartPoint() {
 }
 
 int GetTotalDuration() {
-	if (fp == NULL) {
+	/*if (fp == NULL) {
+		return -1;
+	}*/
+	if (currentFilePath[0] == '\0' && streamSrcInfo[0].path[0] == '\0' && streamSrcInfo[1].path[0] == '\0') {
 		return -1;
 	}
 	int result = round((float)(fileSize - 44) / waveFormat.nAvgBytesPerSec * 1000);
@@ -126,6 +140,7 @@ int OpenFile(const char* path) {
 	fread(type, sizeof(char), 4, fp);
 	if (strncmp(type, "data", 4) != 0) {
 		cout << "Error: Missing data" << endl;
+		return 1;
 	}
 
 	fread(&subchunk2Size, sizeof(DWORD), 1, fp);
@@ -461,12 +476,6 @@ void DumpSoundData() {
 }
 
 ///////////// audio streaming part /////////////
-//char **streamBuf = NULL;
-StreamBuffer streamBuf;
-StreamSrcInfo streamSrcInfo[2];
-
-DWORD t_getStreamData1Id, t_getStreamData2Id;
-DWORD t_sAddBufferId, t_sPlayBufferId;
 
 // arguments pass to get streaming buffer thread
 typedef struct {
@@ -476,7 +485,7 @@ typedef struct {
 } ThreadArgs;
 
 // set streaming source info for a remote wave file, limited to exactly 2 sources
-int SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2) {
+int s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2) {
 	streamSrcInfo[0].server_ip = server1_ip;
 	streamSrcInfo[0].port = port1;
 	streamSrcInfo[0].path = path1;
@@ -590,11 +599,80 @@ int s_Playback(int millisecond) {
 	if (s_SetWaveFormat() != 0) {
 		return 1;
 	}
+	playerState = PLAYING;
 	s_AddStreamBufferFromTime(millisecond);
 	//Thread::Sleep(5000);
 	HANDLE t1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_AddStreamBufferToPlayBuffer, NULL, 0, &t_sAddBufferId);
 	HANDLE t2 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_PlayWavFromBuffer, NULL, 0, &t_sPlayBufferId);
+	HANDLE t3 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_DumpSoundData, NULL, 0, &t_sDumpBufferId);
 	return 0;
+}
+
+// pause streaming music when the music is being played
+int s_PauseMusic() {
+	if (hWaveOut == NULL) {
+		return 1;
+	}
+	if (playerState != PLAYING) {
+		return 1;
+	}
+	currentPlaybackTime += GetCurrentPlaybackTimeFromStartPoint();
+	playerState = PAUSED;
+	HANDLE t1 = OpenThread(THREAD_ALL_ACCESS, false, t_sAddBufferId);
+	HANDLE t2 = OpenThread(THREAD_ALL_ACCESS, false, t_sPlayBufferId);
+	HANDLE t3 = OpenThread(THREAD_ALL_ACCESS, false, t_sDumpBufferId);
+	HANDLE t4 = OpenThread(THREAD_ALL_ACCESS, false, t_getStreamData1Id);
+	HANDLE t5 = OpenThread(THREAD_ALL_ACCESS, false, t_getStreamData2Id);
+	if (t1 != NULL) {
+		WaitForSingleObject(t1, 10000);
+	}
+	if (t2 != NULL) {
+		WaitForSingleObject(t2, 10000);
+	}
+	if (t3 != NULL) {
+		WaitForSingleObject(t3, 10000);
+	}
+	if (t4 != NULL) {
+		WaitForSingleObject(t4, 10000);
+	}
+	if (t5 != NULL) {
+		WaitForSingleObject(t5, 10000);
+	}
+	s_ClearStreamBuffer();
+	return 0;
+}
+
+// restart streaming music when music is paused
+int s_RestartMusic() {
+	if (hWaveOut == NULL) {
+		return 1;
+	}
+	if (playerState != PAUSED) {
+		return 1;
+	}
+	if (streamSrcInfo[0].path[0] == '\0' || streamSrcInfo[1].path[0] == '\0') {
+		return 1;
+	}
+	s_Playback(currentPlaybackTime);
+	return 0;
+}
+
+// skip time in millisecond from the current play time
+int s_SkipSecond(int millisecond) {
+	if (playerState == PLAYING) {
+		//PauseMusic();
+		int newPlaybackTime = millisecond + currentPlaybackTime + GetCurrentPlaybackTimeFromStartPoint();
+		if (newPlaybackTime < 0 || newPlaybackTime >= GetTotalDuration()) {
+			return 1;
+		}
+		s_PauseMusic();
+		currentPlaybackTime = newPlaybackTime;
+		if (streamSrcInfo[0].path[0] != '\0' && streamSrcInfo[1].path[0] != '\0') {
+			s_Playback(newPlaybackTime);
+			return 0;
+		}
+	}
+	return 1;
 }
 
 // load the buffer from the starting time, leaving the buffers of the skipped sections empty
@@ -611,23 +689,7 @@ int s_AddStreamBufferFromTime(int millisecond) {
 	n = len / MAX_STREAM_BUFFER_SIZE;
 	r = len % MAX_STREAM_BUFFER_SIZE;
 
-	SetStreamBufferListLength(n + 1);
-	//FILE* log = fopen("buflog.txt", "w");
-	/*for (int i = (startOffset - 44) / n; i <= n; i++) {
-	DWORD bufLen = (i < n) ? MAX_STREAM_BUFFER_SIZE : r;
-	char* data = new char[bufLen];
-	if (get_data(streamSrcInfo[0].server_ip, streamSrcInfo[0].port, streamSrcInfo[0].path, curOffset, bufLen, data) != 0) {
-	int t = 10;
-	//i++;
-	//return 1;
-	break;
-	}
-	//fwrite(data, sizeof(char), bufLen, log);
-	//fclose(log);
-	InsertStreamBuffer(i, data, bufLen);
-	delete data;
-	curOffset += bufLen;
-	}*/
+	s_SetStreamBufferListLength(n + 1);
 	ThreadArgs *t1Args = new ThreadArgs;
 	t1Args->remote_no = 0;
 	t1Args->n = n;
@@ -638,7 +700,7 @@ int s_AddStreamBufferFromTime(int millisecond) {
 	t2Args->r = r;
 	HANDLE t1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_GetStreamBufferFromSrc, t1Args, 0, &t_getStreamData1Id);
 	HANDLE t2 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_GetStreamBufferFromSrc, t2Args, 0, &t_getStreamData2Id);
-	//fclose(log);
+	
 	return 0;
 }
 
@@ -662,23 +724,26 @@ void s_GetStreamBufferFromSrc(LPVOID args) {
 			}
 			//fwrite(data, sizeof(char), bufLen, log);
 			//fclose(log);
-			InsertStreamBuffer(i, data, bufLen);
+			s_InsertStreamBuffer(i, data, bufLen);
 			delete data;
 		}
 		curOffset += bufLen;
+		if (playerState == PAUSED) {
+			break;
+		}
 	}
 	delete tArgs;		// free memory after use
 }
 
 // initialize buffer list with length specified for new wav to read
-void SetStreamBufferListLength(int length) {
-	ClearStreamBuffer();
+void s_SetStreamBufferListLength(int length) {
+	s_ClearStreamBuffer();
 	streamBuf.length = length;
 	streamBuf.list = new BufElem[length];
 }
 
 // insert streaming data into specified index
-void InsertStreamBuffer(int index, char* data, int length) {
+void s_InsertStreamBuffer(int index, char* data, int length) {
 	if (index >= streamBuf.length) {
 		return;
 	}
@@ -696,7 +761,7 @@ void InsertStreamBuffer(int index, char* data, int length) {
 }
 
 // clear all steaming buffers
-void ClearStreamBuffer() {
+void s_ClearStreamBuffer() {
 	if (streamBuf.length == 0) {
 		return;
 	}
@@ -717,16 +782,19 @@ void s_AddStreamBufferToPlayBuffer() {
 		return;
 	}
 	DWORD curOffset = startOffset;
-	/*DWORD len = endOffset - loadStartOffset;
-	DWORD n, r;
-	n = len / MAX_STREAM_BUFFER_SIZE;
-	r = len % MAX_STREAM_BUFFER_SIZE;*/
 	// add play buffer from each stream buffer
 	DWORD n = streamBuf.length;
+	bool breakFlag = false;
 	for (DWORD i = (startOffset - 44) / n; i < n; i++) {
+		int attempt = 0;		// attempt to try to get streaming data from source
 		while (streamBuf.list[i].length == 0) {
 			// data not yet arrive stream buffer, sleep for a while
-			Thread::Sleep(10);
+			attempt++;
+			Thread::Sleep(1000);
+			if (attempt >= MAX_WAIT_ATTEMPT) {
+				// cannot get the data, return function and terminate the thread
+				return;
+			}
 		}
 		DWORD totalBlock = streamBuf.list[i].length / MAX_BUFFER_SIZE;
 		DWORD remainSize = streamBuf.list[i].length % MAX_BUFFER_SIZE;
@@ -748,8 +816,12 @@ void s_AddStreamBufferToPlayBuffer() {
 			wfb.header.dwLoops = 1L;
 			bufferQueue.push_back(wfb);
 			if (playerState == PAUSED) {
+				breakFlag = true;
 				break;
 			}
+		}
+		if (breakFlag) {
+			break;
 		}
 	}
 	if (playerState == PAUSED) {
@@ -809,7 +881,7 @@ void s_PlayWavFromBuffer() {
 			//OutputDebugString(L"Error to unprepare header\n");
 		}
 
-		//dumpSoundDataQueue.push_back(wfb.header.lpData);
+		dumpSoundDataQueue.push_back(wfb.header.lpData);
 		bufferQueue.pop_front();
 		if (playerState == PAUSED) {
 			break;
@@ -822,7 +894,7 @@ void s_PlayWavFromBuffer() {
 		//OutputDebugString(buf);
 		while (bufferQueue.size() > 0) {
 			WaveFileBlock wfb2 = bufferQueue.front();
-			//dumpSoundDataQueue.push_back(wfb2.header.lpData);
+			dumpSoundDataQueue.push_back(wfb2.header.lpData);
 			bufferQueue.pop_front();
 		}
 		return;
@@ -830,4 +902,35 @@ void s_PlayWavFromBuffer() {
 	cout << "2::Done all playing\n";
 	playerState = FINISHED;
 	waveOutReset(hWaveOut);
+}
+
+void s_DumpSoundData() {
+	while (true) {
+		if (playerState == PAUSED || playerState == FINISHED) {
+			break;
+		}
+		if (dumpSoundDataQueue.size() > 0) {
+			Thread::Sleep(100);
+			char *data = dumpSoundDataQueue.front();
+			if (data != NULL) {
+				delete data;
+			}
+			dumpSoundDataQueue.pop_front();
+		}
+		else {
+			Thread::Sleep(100);
+		}
+	}
+	// wait until play buffer end to clear all sound data
+	HANDLE t2 = OpenThread(THREAD_ALL_ACCESS, false, t_sPlayBufferId);
+	if (t2 != NULL) {
+		WaitForSingleObject(t2, 10000);
+	}
+	while (dumpSoundDataQueue.size() > 0) {
+		char *data = dumpSoundDataQueue.front();
+		if (data != NULL) {
+			delete dumpSoundDataQueue.front();
+		}
+		dumpSoundDataQueue.pop_front();
+	}
 }
