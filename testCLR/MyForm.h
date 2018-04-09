@@ -77,6 +77,7 @@ namespace testCLR {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column12;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column13;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column14;
+	private: System::Windows::Forms::Button^  button14;
 
 	public:
 		float currentTime = 0;
@@ -370,6 +371,20 @@ private: System::ComponentModel::IContainer^  components;
 			this->button5 = (gcnew System::Windows::Forms::Button());
 			this->button6 = (gcnew System::Windows::Forms::Button());
 			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
+			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column2 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column3 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column4 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column5 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column6 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column7 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column8 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column11 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column9 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column10 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column12 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column13 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column14 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->button7 = (gcnew System::Windows::Forms::Button());
@@ -391,20 +406,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->button12 = (gcnew System::Windows::Forms::Button());
 			this->button13 = (gcnew System::Windows::Forms::Button());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column2 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column3 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column4 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column5 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column6 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column7 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column8 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column11 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column9 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column10 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column12 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column13 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column14 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->button14 = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
@@ -559,6 +561,100 @@ private: System::ComponentModel::IContainer^  components;
 			this->dataGridView1->TabIndex = 11;
 			this->dataGridView1->TabStop = false;
 			this->dataGridView1->CellDoubleClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::Table_Select);
+			// 
+			// Column1
+			// 
+			this->Column1->HeaderText = L"Title";
+			this->Column1->Name = L"Column1";
+			this->Column1->ReadOnly = true;
+			this->Column1->Width = 300;
+			// 
+			// Column2
+			// 
+			this->Column2->HeaderText = L"Artist";
+			this->Column2->Name = L"Column2";
+			this->Column2->ReadOnly = true;
+			this->Column2->Width = 150;
+			// 
+			// Column3
+			// 
+			this->Column3->HeaderText = L"Album";
+			this->Column3->Name = L"Column3";
+			this->Column3->ReadOnly = true;
+			this->Column3->Width = 150;
+			// 
+			// Column4
+			// 
+			this->Column4->HeaderText = L"Duration";
+			this->Column4->Name = L"Column4";
+			this->Column4->ReadOnly = true;
+			// 
+			// Column5
+			// 
+			this->Column5->HeaderText = L"Online/Offline";
+			this->Column5->Name = L"Column5";
+			this->Column5->ReadOnly = true;
+			this->Column5->Width = 150;
+			// 
+			// Column6
+			// 
+			this->Column6->HeaderText = L"Song Path";
+			this->Column6->Name = L"Column6";
+			this->Column6->ReadOnly = true;
+			this->Column6->Width = 150;
+			// 
+			// Column7
+			// 
+			this->Column7->HeaderText = L"Lyrics Path";
+			this->Column7->Name = L"Column7";
+			this->Column7->ReadOnly = true;
+			this->Column7->Width = 50;
+			// 
+			// Column8
+			// 
+			this->Column8->HeaderText = L"Image Path";
+			this->Column8->Name = L"Column8";
+			this->Column8->ReadOnly = true;
+			// 
+			// Column11
+			// 
+			this->Column11->HeaderText = L"Checksum";
+			this->Column11->Name = L"Column11";
+			this->Column11->ReadOnly = true;
+			// 
+			// Column9
+			// 
+			this->Column9->HeaderText = L"Remote IP1";
+			this->Column9->Name = L"Column9";
+			this->Column9->ReadOnly = true;
+			this->Column9->Width = 120;
+			// 
+			// Column10
+			// 
+			this->Column10->HeaderText = L"Port1";
+			this->Column10->Name = L"Column10";
+			this->Column10->ReadOnly = true;
+			this->Column10->Width = 50;
+			// 
+			// Column12
+			// 
+			this->Column12->HeaderText = L"Remote IP2";
+			this->Column12->Name = L"Column12";
+			this->Column12->ReadOnly = true;
+			this->Column12->Width = 120;
+			// 
+			// Column13
+			// 
+			this->Column13->HeaderText = L"Port2";
+			this->Column13->Name = L"Column13";
+			this->Column13->ReadOnly = true;
+			this->Column13->Width = 50;
+			// 
+			// Column14
+			// 
+			this->Column14->HeaderText = L"Song Path2";
+			this->Column14->Name = L"Column14";
+			this->Column14->ReadOnly = true;
 			// 
 			// label3
 			// 
@@ -715,7 +811,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->textBox3->Name = L"textBox3";
 			this->textBox3->Size = System::Drawing::Size(85, 22);
 			this->textBox3->TabIndex = 27;
-			this->textBox3->Text = L"localhost";
+			this->textBox3->Text = L"192.168.42.12";
 			this->textBox3->Visible = false;
 			// 
 			// textBox4
@@ -724,7 +820,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->textBox4->Name = L"textBox4";
 			this->textBox4->Size = System::Drawing::Size(85, 22);
 			this->textBox4->TabIndex = 29;
-			this->textBox4->Text = L"localhost";
+			this->textBox4->Text = L"192.168.42.12";
 			this->textBox4->Visible = false;
 			// 
 			// textBox5
@@ -774,99 +870,15 @@ private: System::ComponentModel::IContainer^  components;
 			this->timer1->Interval = 1000;
 			this->timer1->Tick += gcnew System::EventHandler(this, &MyForm::timer1_Tick);
 			// 
-			// Column1
+			// button14
 			// 
-			this->Column1->HeaderText = L"Title";
-			this->Column1->Name = L"Column1";
-			this->Column1->ReadOnly = true;
-			this->Column1->Width = 300;
-			// 
-			// Column2
-			// 
-			this->Column2->HeaderText = L"Artist";
-			this->Column2->Name = L"Column2";
-			this->Column2->ReadOnly = true;
-			this->Column2->Width = 150;
-			// 
-			// Column3
-			// 
-			this->Column3->HeaderText = L"Album";
-			this->Column3->Name = L"Column3";
-			this->Column3->ReadOnly = true;
-			this->Column3->Width = 150;
-			// 
-			// Column4
-			// 
-			this->Column4->HeaderText = L"Duration";
-			this->Column4->Name = L"Column4";
-			this->Column4->ReadOnly = true;
-			// 
-			// Column5
-			// 
-			this->Column5->HeaderText = L"Online/Offline";
-			this->Column5->Name = L"Column5";
-			this->Column5->ReadOnly = true;
-			this->Column5->Width = 150;
-			// 
-			// Column6
-			// 
-			this->Column6->HeaderText = L"Song Path";
-			this->Column6->Name = L"Column6";
-			this->Column6->ReadOnly = true;
-			this->Column6->Width = 150;
-			// 
-			// Column7
-			// 
-			this->Column7->HeaderText = L"Lyrics Path";
-			this->Column7->Name = L"Column7";
-			this->Column7->ReadOnly = true;
-			this->Column7->Width = 50;
-			// 
-			// Column8
-			// 
-			this->Column8->HeaderText = L"Image Path";
-			this->Column8->Name = L"Column8";
-			this->Column8->ReadOnly = true;
-			// 
-			// Column11
-			// 
-			this->Column11->HeaderText = L"Checksum";
-			this->Column11->Name = L"Column11";
-			this->Column11->ReadOnly = true;
-			// 
-			// Column9
-			// 
-			this->Column9->HeaderText = L"Remote IP1";
-			this->Column9->Name = L"Column9";
-			this->Column9->ReadOnly = true;
-			this->Column9->Width = 120;
-			// 
-			// Column10
-			// 
-			this->Column10->HeaderText = L"Port1";
-			this->Column10->Name = L"Column10";
-			this->Column10->ReadOnly = true;
-			this->Column10->Width = 50;
-			// 
-			// Column12
-			// 
-			this->Column12->HeaderText = L"Remote IP2";
-			this->Column12->Name = L"Column12";
-			this->Column12->ReadOnly = true;
-			this->Column12->Width = 120;
-			// 
-			// Column13
-			// 
-			this->Column13->HeaderText = L"Port2";
-			this->Column13->Name = L"Column13";
-			this->Column13->ReadOnly = true;
-			this->Column13->Width = 50;
-			// 
-			// Column14
-			// 
-			this->Column14->HeaderText = L"Song Path2";
-			this->Column14->Name = L"Column14";
-			this->Column14->ReadOnly = true;
+			this->button14->Location = System::Drawing::Point(1161, 88);
+			this->button14->Name = L"button14";
+			this->button14->Size = System::Drawing::Size(75, 23);
+			this->button14->TabIndex = 34;
+			this->button14->Text = L"Task 5 Demo";
+			this->button14->UseVisualStyleBackColor = true;
+			this->button14->Click += gcnew System::EventHandler(this, &MyForm::demo_Click);
 			// 
 			// MyForm
 			// 
@@ -874,6 +886,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->ClientSize = System::Drawing::Size(1284, 461);
+			this->Controls->Add(this->button14);
 			this->Controls->Add(this->button13);
 			this->Controls->Add(this->button12);
 			this->Controls->Add(this->textBox6);
@@ -1028,6 +1041,8 @@ private: System::ComponentModel::IContainer^  components;
 
 		if (String::Compare(selectedPlayMode, "Stream") == 0) {
 			s_SkipSecond(10000);
+			s_PauseMusic();
+			s_RestartMusic();
 		}
 		else {
 			SkipSecond(10000);
@@ -1045,6 +1060,8 @@ private: System::ComponentModel::IContainer^  components;
 
 		if (String::Compare(selectedPlayMode, "Stream") == 0) {
 			s_SkipSecond(-10000);
+			s_PauseMusic();
+			s_RestartMusic();
 		}
 		else {
 			SkipSecond(-10000);
@@ -1162,7 +1179,7 @@ private: System::ComponentModel::IContainer^  components;
 
 	private: System::Void Next_Click(System::Object^  sender, System::EventArgs^  e) {
 		System::String^ selectedPlayMode;
-		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+		selectedPlayMode = dataGridView1->Rows[playingSongIndex+1]->Cells[4]->Value->ToString();
 
 		if (playingSongIndex != dataGridView1->Rows->Count - 1) {
 			playingSongIndex++;
@@ -1218,7 +1235,7 @@ private: System::ComponentModel::IContainer^  components;
 
 	private: System::Void Previous_Click(System::Object^  sender, System::EventArgs^  e) {
 		System::String^ selectedPlayMode;
-		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+		selectedPlayMode = dataGridView1->Rows[playingSongIndex - 1]->Cells[4]->Value->ToString();
 
 		if (playingSongIndex != 0) {
 			playingSongIndex--;
@@ -2145,6 +2162,32 @@ private: System::ComponentModel::IContainer^  components;
 		wchar_t buf[100];
 		swprintf_s(buf, 100, L"The time of the trackBar = %d\n ", timeTrackBar * 1000);
 		OutputDebugString(buf);
+	}
+	private: System::Void demo_Click(System::Object^  sender, System::EventArgs^  e) {
+
+		int rowIndex = dataGridView1->Rows->Add();
+
+		System::String^ path1 = dataGridView1->Rows[rowIndex - 2]->Cells[5]->Value->ToString();
+		System::String^ path2 = dataGridView1->Rows[rowIndex - 1]->Cells[5]->Value->ToString();
+		System::String^ _port1 = dataGridView1->Rows[rowIndex - 1]->Cells[10]->Value->ToString();
+		System::String^ _remoteIP1 = dataGridView1->Rows[rowIndex - 1]->Cells[11]->Value->ToString();
+		System::String^ _port2 = dataGridView1->Rows[rowIndex - 2]->Cells[10]->Value->ToString();
+		System::String^ _remoteIP2 = dataGridView1->Rows[rowIndex - 2]->Cells[11]->Value->ToString();
+
+		dataGridView1->Rows[rowIndex]->Cells[0]->Value = "You and Me";
+		dataGridView1->Rows[rowIndex]->Cells[1]->Value = "Dear Jane";
+		dataGridView1->Rows[rowIndex]->Cells[2]->Value = "101";
+		dataGridView1->Rows[rowIndex]->Cells[3]->Value = "4:45";
+		dataGridView1->Rows[rowIndex]->Cells[4]->Value = "Stream";
+		dataGridView1->Rows[rowIndex]->Cells[5]->Value = path1;
+		dataGridView1->Rows[rowIndex]->Cells[6]->Value = "C:/Users/user/Desktop/sqlitestudio-3.1.1/DJ3.txt";
+		dataGridView1->Rows[rowIndex]->Cells[7]->Value = "C:/Users/user/Desktop/sqlitestudio-3.1.1/DJ3.jpg";
+		dataGridView1->Rows[rowIndex]->Cells[8]->Value = "7713BE99621F183F5AC0900052C3B6A9E0BEDDC9";
+		dataGridView1->Rows[rowIndex]->Cells[9]->Value = _remoteIP2;
+		dataGridView1->Rows[rowIndex]->Cells[10]->Value = _port2;
+		dataGridView1->Rows[rowIndex]->Cells[11]->Value = _remoteIP1;
+		dataGridView1->Rows[rowIndex]->Cells[12]->Value = _port1;
+		dataGridView1->Rows[rowIndex]->Cells[13]->Value = path2;
 	}
 };
 }
