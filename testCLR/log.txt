@@ -1,0 +1,318 @@
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Error: Not RIFF format
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Chunk Size : 42315110
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 42314832
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Chunk Size : 42315110
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 42314832
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Chunk Size : 42315110
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 42314832
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Chunk Size : 42315110
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 42314832
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Chunk Size : 42315110
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 42314832
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Chunk Size : 42315110
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 42314832
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\NO_CURRY_NO_LIFE.wav
+Chunk Size : 42315110
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 42314832
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328
+localhost:8080 C:\Users\User\Desktop\Sweet_Sweet_Soul.wav
+Chunk Size : 51683582
+Subchunk 1 Size : 16
+Audio Format : 1
+Number of Channels : 2
+Sample Rate : 44100
+Byte Rate : 176400
+Block Align (bytes per sample) : 4
+Bits per Sample : 16
+Subchunk 2 Size : 51683328

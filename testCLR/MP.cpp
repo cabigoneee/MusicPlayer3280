@@ -40,8 +40,8 @@ int InitMusicPlayer() {
 	fileSize = 0;
 	playerState = PREPARING;
 	currentFilePath[0] = '\0';
-	streamSrcInfo[0].path = "\0";
-	streamSrcInfo[1].path = "\0";
+	streamSrcInfo[0].path[0] = '\0';
+	streamSrcInfo[1].path[0] = '\0';
 	currentPlaybackTime = 0;
 	return 0;
 }
@@ -486,12 +486,12 @@ typedef struct {
 
 // set streaming source info for a remote wave file, limited to exactly 2 sources
 int s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2) {
-	streamSrcInfo[0].server_ip = server1_ip;
+	strcpy(streamSrcInfo[0].server_ip, (const char*)server1_ip);
 	streamSrcInfo[0].port = port1;
-	streamSrcInfo[0].path = path1;
-	streamSrcInfo[1].server_ip = server2_ip;
+	strcpy(streamSrcInfo[0].path, (const char*)path1);
+	strcpy(streamSrcInfo[1].server_ip , (const char*)server2_ip);
 	streamSrcInfo[1].port = port2;
-	streamSrcInfo[1].path = path2;
+	strcpy(streamSrcInfo[1].path , (const char*)path2);
 	if (streamSrcInfo[0].server_ip == NULL || streamSrcInfo[0].path == NULL
 		|| streamSrcInfo[1].server_ip == NULL || streamSrcInfo[1].path == NULL) {
 		return 1;
@@ -591,6 +591,8 @@ int s_SetWaveFormat() {
 	fprintf(log, "Subchunk 2 Size : %d\n", subchunk2Size);
 	fclose(log);
 
+	waveOutOpen(&hWaveOut, WAVE_MAPPER, &waveFormat, (DWORD_PTR)waitEvent, 0L, CALLBACK_EVENT);
+
 	return 0;
 }
 
@@ -604,7 +606,7 @@ int s_Playback(int millisecond) {
 	//Thread::Sleep(5000);
 	HANDLE t1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_AddStreamBufferToPlayBuffer, NULL, 0, &t_sAddBufferId);
 	HANDLE t2 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_PlayWavFromBuffer, NULL, 0, &t_sPlayBufferId);
-	HANDLE t3 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_DumpSoundData, NULL, 0, &t_sDumpBufferId);
+	//HANDLE t3 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)s_DumpSoundData, NULL, 0, &t_sDumpBufferId);
 	return 0;
 }
 
@@ -801,15 +803,16 @@ void s_AddStreamBufferToPlayBuffer() {
 		// loop through one stream buffer to put data into play buffers
 		for (DWORD j = 0; j <= totalBlock; j++) {
 			DWORD bufLen = (j < totalBlock) ? MAX_BUFFER_SIZE : remainSize;
-			if (remainSize <= 0) { continue; }
+			if (bufLen <= 0) { continue; }
 			printf("add buffer %d %d\n", i, j);
 			while (bufferQueue.size() >= MAX_BUFFER_COUNT) {
 				Thread::Sleep(10);
 			}
 			WaveFileBlock wfb;
 			memset(&wfb.header, 0, sizeof(WAVEHDR));
-			//char* data = new char[bufLen];
-			char* data = streamBuf.list[i].data + j * MAX_BUFFER_SIZE;		// get the offset of data ptr
+			char* data = new char[bufLen];
+			//char* data = streamBuf.list[i].data + j * MAX_BUFFER_SIZE;		// get the offset of data ptr
+			memcpy(data, streamBuf.list[i].data + j * MAX_BUFFER_SIZE, bufLen);
 			wfb.header.lpData = data;
 			wfb.header.dwBufferLength = bufLen;
 			wfb.header.dwFlags = 0L;

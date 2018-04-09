@@ -33,7 +33,7 @@ int get_data(const char* server_ip, int port, const char* filename, int start, i
 		string url("http://" + string(server_ip) + ":" + to_string(port) + "/get_data?filename=" + string(filename)
 		+ "&start=" + to_string(start) + "&length=" + to_string(length));
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, write_res);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &write_res);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
 		res = curl_easy_perform(curl);

@@ -39,9 +39,9 @@ typedef struct {
 
 //////////////////streaming////////////////////
 typedef struct {
-	char* server_ip;
+	char server_ip[256];
 	int port;
-	char* path;
+	char path[256];
 } StreamSrcInfo;
 
 typedef struct {

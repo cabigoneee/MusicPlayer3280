@@ -49,6 +49,20 @@ namespace testCLR {
 	private: System::Windows::Forms::TextBox^  textBox6;
 	private: System::Windows::Forms::Button^  button12;
 	private: System::Windows::Forms::Button^  button13;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	private: System::Windows::Forms::Timer^  timer1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column2;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column3;
@@ -62,7 +76,7 @@ namespace testCLR {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column10;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column12;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column13;
-	private: System::Windows::Forms::Timer^  timer1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column14;
 
 	public:
 		float currentTime = 0;
@@ -185,6 +199,7 @@ namespace testCLR {
 						dataGridView1->Rows[rowIndex]->Cells[10]->Value = "-";
 						dataGridView1->Rows[rowIndex]->Cells[11]->Value = "-";
 						dataGridView1->Rows[rowIndex]->Cells[12]->Value = "-";
+						dataGridView1->Rows[rowIndex]->Cells[13]->Value = "-";
 					}
 					wchar_t buf[100];
 					swprintf_s(buf, 100, L"\n");
@@ -224,7 +239,8 @@ namespace testCLR {
 				remoteIP1  VARCHAR(20)  NOT NULL, \
 				port1      INTEGER, \
 				remoteIP2  VARCHAR(20), \
-				port2      INTEGER);";
+				port2      INTEGER, \
+				songPath2  VARCHAR(255));";
 			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
 
 			//clear all old datum
@@ -235,7 +251,7 @@ namespace testCLR {
 
 			//insert each datum
 			string title, artist, album, duration, location, songPath, lyricsPath, imagePath;
-			string checksum, remoteIP1, remoteIP2, port1, port2;
+			string checksum, remoteIP1, remoteIP2, port1, port2, songPath2;
 			for (int i = 0; i < dataGridView1->Rows->Count; i++) {
 				System::String^ _title = dataGridView1->Rows[i]->Cells[0]->Value->ToString();
 				System::String^ _artist = dataGridView1->Rows[i]->Cells[1]->Value->ToString();
@@ -250,6 +266,7 @@ namespace testCLR {
 				//System::String^ _port1 = dataGridView1->Rows[i]->Cells[10]->Value->ToString();
 				//System::String^ _remoteIP2 = dataGridView1->Rows[i]->Cells[11]->Value->ToString();
 				//System::String^ _port2 = dataGridView1->Rows[i]->Cells[12]->Value->ToString();
+				//System::String^ _songPath2 = dataGridView1->Rows[i]->Cells[13]->Value->ToString();
 
 				MarshalString(_title, title);
 				MarshalString(_artist, artist);
@@ -264,13 +281,14 @@ namespace testCLR {
 				//MarshalString(_remoteIP2, remoteIP2);
 				//MarshalString(_port1, port1);
 				//MarshalString(_port2, port2);
+				//MarshalString(_songPath2, songPath2);
 
 				string fullPara;
 				fullPara = "INSERT INTO Song VALUES (NULL, '" + title + "', '" + artist + "', '" + album + "', '"
 					+ duration + "', '" + location + "', '" + songPath + "', '" + lyricsPath + "', '"
 					+ imagePath + "', '" + checksum + "', '" 
 					//+ remoteIP1 + "', '" + port1 + "', '" + remoteIP2 + "', '" + port2 + "');'"; for now, there is no such field in songDB.db
-					+ "-" + "', '" + "-" + "', '" + "-" + "', '" + "-" + "');'";
+					+ "-" + "', '" + "-" + "', '" + "-" + "', '" + "-" + "', '" + "-" + "');'";
 				sql = fullPara.c_str();
 				rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
 				wchar_t buf[500];
@@ -352,19 +370,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->button5 = (gcnew System::Windows::Forms::Button());
 			this->button6 = (gcnew System::Windows::Forms::Button());
 			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
-			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column2 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column3 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column4 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column5 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column6 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column7 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column8 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column11 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column9 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column10 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column12 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->Column13 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->button7 = (gcnew System::Windows::Forms::Button());
@@ -386,6 +391,20 @@ private: System::ComponentModel::IContainer^  components;
 			this->button12 = (gcnew System::Windows::Forms::Button());
 			this->button13 = (gcnew System::Windows::Forms::Button());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column2 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column3 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column4 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column5 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column6 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column7 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column8 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column11 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column9 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column10 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column12 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column13 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column14 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
@@ -525,10 +544,10 @@ private: System::ComponentModel::IContainer^  components;
 			this->dataGridView1->AllowUserToDeleteRows = false;
 			this->dataGridView1->AllowUserToResizeRows = false;
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(13) {
+			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(14) {
 				this->Column1,
 					this->Column2, this->Column3, this->Column4, this->Column5, this->Column6, this->Column7, this->Column8, this->Column11, this->Column9,
-					this->Column10, this->Column12, this->Column13
+					this->Column10, this->Column12, this->Column13, this->Column14
 			});
 			this->dataGridView1->Location = System::Drawing::Point(53, 201);
 			this->dataGridView1->Name = L"dataGridView1";
@@ -540,94 +559,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->dataGridView1->TabIndex = 11;
 			this->dataGridView1->TabStop = false;
 			this->dataGridView1->CellDoubleClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::Table_Select);
-			// 
-			// Column1
-			// 
-			this->Column1->HeaderText = L"Title";
-			this->Column1->Name = L"Column1";
-			this->Column1->ReadOnly = true;
-			this->Column1->Width = 300;
-			// 
-			// Column2
-			// 
-			this->Column2->HeaderText = L"Artist";
-			this->Column2->Name = L"Column2";
-			this->Column2->ReadOnly = true;
-			this->Column2->Width = 150;
-			// 
-			// Column3
-			// 
-			this->Column3->HeaderText = L"Album";
-			this->Column3->Name = L"Column3";
-			this->Column3->ReadOnly = true;
-			this->Column3->Width = 150;
-			// 
-			// Column4
-			// 
-			this->Column4->HeaderText = L"Duration";
-			this->Column4->Name = L"Column4";
-			this->Column4->ReadOnly = true;
-			// 
-			// Column5
-			// 
-			this->Column5->HeaderText = L"Online/Offline";
-			this->Column5->Name = L"Column5";
-			this->Column5->ReadOnly = true;
-			this->Column5->Width = 150;
-			// 
-			// Column6
-			// 
-			this->Column6->HeaderText = L"Song Path";
-			this->Column6->Name = L"Column6";
-			this->Column6->ReadOnly = true;
-			this->Column6->Width = 150;
-			// 
-			// Column7
-			// 
-			this->Column7->HeaderText = L"Lyrics Path";
-			this->Column7->Name = L"Column7";
-			this->Column7->ReadOnly = true;
-			this->Column7->Width = 50;
-			// 
-			// Column8
-			// 
-			this->Column8->HeaderText = L"Image Path";
-			this->Column8->Name = L"Column8";
-			this->Column8->ReadOnly = true;
-			// 
-			// Column11
-			// 
-			this->Column11->HeaderText = L"Checksum";
-			this->Column11->Name = L"Column11";
-			this->Column11->ReadOnly = true;
-			// 
-			// Column9
-			// 
-			this->Column9->HeaderText = L"Remote IP1";
-			this->Column9->Name = L"Column9";
-			this->Column9->ReadOnly = true;
-			this->Column9->Width = 120;
-			// 
-			// Column10
-			// 
-			this->Column10->HeaderText = L"Port1";
-			this->Column10->Name = L"Column10";
-			this->Column10->ReadOnly = true;
-			this->Column10->Width = 50;
-			// 
-			// Column12
-			// 
-			this->Column12->HeaderText = L"Remote IP2";
-			this->Column12->Name = L"Column12";
-			this->Column12->ReadOnly = true;
-			this->Column12->Width = 120;
-			// 
-			// Column13
-			// 
-			this->Column13->HeaderText = L"Port2";
-			this->Column13->Name = L"Column13";
-			this->Column13->ReadOnly = true;
-			this->Column13->Width = 50;
 			// 
 			// label3
 			// 
@@ -843,6 +774,100 @@ private: System::ComponentModel::IContainer^  components;
 			this->timer1->Interval = 1000;
 			this->timer1->Tick += gcnew System::EventHandler(this, &MyForm::timer1_Tick);
 			// 
+			// Column1
+			// 
+			this->Column1->HeaderText = L"Title";
+			this->Column1->Name = L"Column1";
+			this->Column1->ReadOnly = true;
+			this->Column1->Width = 300;
+			// 
+			// Column2
+			// 
+			this->Column2->HeaderText = L"Artist";
+			this->Column2->Name = L"Column2";
+			this->Column2->ReadOnly = true;
+			this->Column2->Width = 150;
+			// 
+			// Column3
+			// 
+			this->Column3->HeaderText = L"Album";
+			this->Column3->Name = L"Column3";
+			this->Column3->ReadOnly = true;
+			this->Column3->Width = 150;
+			// 
+			// Column4
+			// 
+			this->Column4->HeaderText = L"Duration";
+			this->Column4->Name = L"Column4";
+			this->Column4->ReadOnly = true;
+			// 
+			// Column5
+			// 
+			this->Column5->HeaderText = L"Online/Offline";
+			this->Column5->Name = L"Column5";
+			this->Column5->ReadOnly = true;
+			this->Column5->Width = 150;
+			// 
+			// Column6
+			// 
+			this->Column6->HeaderText = L"Song Path";
+			this->Column6->Name = L"Column6";
+			this->Column6->ReadOnly = true;
+			this->Column6->Width = 150;
+			// 
+			// Column7
+			// 
+			this->Column7->HeaderText = L"Lyrics Path";
+			this->Column7->Name = L"Column7";
+			this->Column7->ReadOnly = true;
+			this->Column7->Width = 50;
+			// 
+			// Column8
+			// 
+			this->Column8->HeaderText = L"Image Path";
+			this->Column8->Name = L"Column8";
+			this->Column8->ReadOnly = true;
+			// 
+			// Column11
+			// 
+			this->Column11->HeaderText = L"Checksum";
+			this->Column11->Name = L"Column11";
+			this->Column11->ReadOnly = true;
+			// 
+			// Column9
+			// 
+			this->Column9->HeaderText = L"Remote IP1";
+			this->Column9->Name = L"Column9";
+			this->Column9->ReadOnly = true;
+			this->Column9->Width = 120;
+			// 
+			// Column10
+			// 
+			this->Column10->HeaderText = L"Port1";
+			this->Column10->Name = L"Column10";
+			this->Column10->ReadOnly = true;
+			this->Column10->Width = 50;
+			// 
+			// Column12
+			// 
+			this->Column12->HeaderText = L"Remote IP2";
+			this->Column12->Name = L"Column12";
+			this->Column12->ReadOnly = true;
+			this->Column12->Width = 120;
+			// 
+			// Column13
+			// 
+			this->Column13->HeaderText = L"Port2";
+			this->Column13->Name = L"Column13";
+			this->Column13->ReadOnly = true;
+			this->Column13->Width = 50;
+			// 
+			// Column14
+			// 
+			this->Column14->HeaderText = L"Song Path2";
+			this->Column14->Name = L"Column14";
+			this->Column14->ReadOnly = true;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
@@ -894,6 +919,9 @@ private: System::ComponentModel::IContainer^  components;
 #pragma endregion
 	private: System::Void Play_Click(System::Object^  sender, System::EventArgs^  e) {
 		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+
 		if (playing) {
 			playing = 0;
 			currentTime = GetCurrentPlaybackTime();
@@ -904,7 +932,13 @@ private: System::ComponentModel::IContainer^  components;
 
 			button2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button9.BackgroundImage")));
 
-			PauseMusic();
+			if (String::Compare(selectedPlayMode, "Stream") == 0) {
+				PauseMusic();
+			}
+			else {
+				s_PauseMusic();
+			}
+			
 			timer1->Stop();
 			//ClosePlayer();			
 		}
@@ -926,38 +960,96 @@ private: System::ComponentModel::IContainer^  components;
 
 			if (String::Compare(selectedSong, currentSong) == 0) {
 				//same
-				RestartMusic();
+				if (String::Compare(selectedPlayMode, "Stream") == 0) {
+					RestartMusic();
+				}
+				else {
+					s_RestartMusic();
+				}
 				timer1->Start();
 			}
 			else {
 				//not same
-				//update info first before playing the song
-				//updateSongInfo();
 
-				System::String^ selectedSongPath;
-				selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
-				string songPath;
-				MarshalString(selectedSongPath, songPath);
+				if (String::Compare(selectedPlayMode, "Stream") == 0) {
 
-				playingSongIndex = dataGridView1->SelectedCells[0]->RowIndex;
-				SelectMusic(songPath.c_str()); // convert string to char*
+					wchar_t buf[100];
+					swprintf_s(buf, 100, L"This song is played in streaming mode\n");
+					OutputDebugString(buf);
 
+					System::String^ _remoteIP1 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[9]->Value->ToString();
+					System::String^ _port1 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[10]->Value->ToString();
+					System::String^ _remoteIP2 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[11]->Value->ToString();
+					System::String^ _port2 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[12]->Value->ToString();
+					System::String^ _path1 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
+					System::String^ _path2 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[13]->Value->ToString();
+					string remoteIP1, port1, remoteIP2, port2, path1, path2;
+					MarshalString(_remoteIP1, remoteIP1);
+					MarshalString(_port1, port1);
+					MarshalString(_remoteIP2, remoteIP2);
+					MarshalString(_port2, port2);
+					MarshalString(_path1, path1);
+					MarshalString(_path2, path2);
+
+					swprintf_s(buf, 100, L"path of remote sogns:\n ");
+					OutputDebugString(buf);
+					swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP1.c_str(), stoi(port1), path1.c_str());
+					OutputDebugString(buf);
+					swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP2.c_str(), stoi(port2), path2.c_str());
+					OutputDebugString(buf);
+
+					//s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
+					char pathc1[256], pathc2[256], host1[256], host2[256];
+					strcpy(pathc1, path1.c_str());
+					strcpy(pathc2, path2.c_str());
+					strcpy(host1, remoteIP1.c_str());
+					strcpy(host2, remoteIP2.c_str());
+					s_SetStreamSrcInfo(host1, stoi(port1), pathc1, host2, stoi(port2), pathc2);
+					s_Playback(0);
+				}
+
+				else {
+					System::String^ selectedSongPath;
+					selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
+					string songPath;
+					MarshalString(selectedSongPath, songPath);
+
+					playingSongIndex = dataGridView1->SelectedCells[0]->RowIndex;
+					SelectMusic(songPath.c_str()); // convert string to char*
+				}
 				updateSongInfo();
 			}
 			playing = 1;
 		}
 	}
 	private: System::Void Forward_Click(System::Object^  sender, System::EventArgs^  e) {
-		SkipSecond(10000);
-		currentTime = GetCurrentPlaybackTime();
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+
+		if (String::Compare(selectedPlayMode, "Stream") == 0) {
+			s_SkipSecond(10000);
+		}
+		else {
+			SkipSecond(10000);
+			currentTime = GetCurrentPlaybackTime();
+		}
+		
 
 		wchar_t buf[100];
 		swprintf_s(buf, 100, L"10s rewind, Current Time Now %f\n", currentTime);
 		OutputDebugString(buf);
 	}
 	private: System::Void Backward_Click(System::Object^  sender, System::EventArgs^  e) {
-		SkipSecond(-10000);
-		currentTime = GetCurrentPlaybackTime();
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+
+		if (String::Compare(selectedPlayMode, "Stream") == 0) {
+			s_SkipSecond(-10000);
+		}
+		else {
+			SkipSecond(-10000);
+			currentTime = GetCurrentPlaybackTime();
+		}
 
 		wchar_t buf[100];
 		swprintf_s(buf, 100, L"10s forward, Current Time Now %f\n", currentTime);
@@ -982,21 +1074,74 @@ private: System::ComponentModel::IContainer^  components;
 		SetVolume(value, value);
 
 	}
-			 //converting String^ to char*
-			 void MarshalString(String ^ s, string& os) {
-				 using namespace Runtime::InteropServices;
-				 const char* chars =
-					 (const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
-				 os = chars;
-				 Marshal::FreeHGlobal(IntPtr((void*)chars));
-			 }
+	 //converting String^ to char*
+	 void MarshalString(String ^ s, string& os) {
+		 using namespace Runtime::InteropServices;
+		 const char* chars =
+			 (const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+		 os = chars;
+		 Marshal::FreeHGlobal(IntPtr((void*)chars));
+	 }
 
 	private: System::Void Table_Select(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
 
-		System::String^ selectedSongPath;
-		selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+
 		string songPath;
-		MarshalString(selectedSongPath, songPath);
+		System::String^ selectedSongPath;
+		//stream mode
+		
+		if (String::Compare(selectedPlayMode, "Stream") == 0) {
+
+			wchar_t buf[100];
+			swprintf_s(buf, 100, L"This song is played in streaming mode\n");
+			OutputDebugString(buf);
+
+			System::String^ _remoteIP1 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[9]->Value->ToString();
+			System::String^ _port1 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[10]->Value->ToString();
+			System::String^ _remoteIP2 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[11]->Value->ToString();
+			System::String^ _port2 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[12]->Value->ToString();
+			System::String^ _path1 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
+			System::String^ _path2 = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[13]->Value->ToString();
+			string remoteIP1, port1, remoteIP2, port2, path1, path2;
+			MarshalString(_remoteIP1, remoteIP1);
+			MarshalString(_port1, port1);
+			MarshalString(_remoteIP2, remoteIP2);
+			MarshalString(_port2, port2);
+			MarshalString(_path1, path1);
+			MarshalString(_path2, path2);
+
+			swprintf_s(buf, 100, L"path of remote sogns:\n ");
+			OutputDebugString(buf);
+			swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP1.c_str(), stoi(port1), path1.c_str());
+			OutputDebugString(buf);
+			swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP2.c_str(), stoi(port2), path2.c_str());
+			OutputDebugString(buf);
+
+			//s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
+			s_SetStreamSrcInfo((char*)remoteIP1.c_str(), stoi(port1), (char*)path1.c_str(), (char*)remoteIP2.c_str(), stoi(port2), (char*)path2.c_str());
+			s_Playback(0);
+			while (s_SetWaveFormat() != 0) {
+				Sleep(100);
+			}
+			songPath = path1 + " and " + path2;
+		}
+		
+		else {
+
+			wchar_t buf[100];
+			swprintf_s(buf, 100, L"This song is played in local mode\n");
+			OutputDebugString(buf);
+
+			
+			selectedSongPath = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[5]->Value->ToString();
+			
+			MarshalString(selectedSongPath, songPath);
+
+			SelectMusic(songPath.c_str()); // convert string to char*
+		}
+
 		wchar_t buf[100];
 		swprintf_s(buf, 100, L"selected row: \n", dataGridView1->SelectedCells[0]->RowIndex);
 		OutputDebugString(buf);
@@ -1004,11 +1149,8 @@ private: System::ComponentModel::IContainer^  components;
 		OutputDebugString(buf);
 		swprintf_s(buf, 100, L"selected song path: \n", songPath);
 		OutputDebugString(buf);
-		swprintf_s(buf, 100, L"dfjaldkjfalkjdflkajsldkfj: \n", selectedSongPath);
-		OutputDebugString(buf);
 
-		playingSongIndex = dataGridView1->SelectedCells[0]->RowIndex;
-		SelectMusic(songPath.c_str()); // convert string to char*
+		playingSongIndex = dataGridView1->SelectedCells[0]->RowIndex;		
 		playing = 1;
 
 		System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
@@ -1019,14 +1161,50 @@ private: System::ComponentModel::IContainer^  components;
 	}
 
 	private: System::Void Next_Click(System::Object^  sender, System::EventArgs^  e) {
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+
 		if (playingSongIndex != dataGridView1->Rows->Count - 1) {
 			playingSongIndex++;
+			if (String::Compare(selectedPlayMode, "Stream") == 0) {
 
-			System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
-			string songPath;
-			MarshalString(selectedSongPath, songPath);
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"This song is played in streaming mode\n");
+				OutputDebugString(buf);
 
-			SelectMusic(songPath.c_str()); // convert string to char*
+				System::String^ _remoteIP1 = dataGridView1->Rows[playingSongIndex]->Cells[9]->Value->ToString();
+				System::String^ _port1 = dataGridView1->Rows[playingSongIndex]->Cells[10]->Value->ToString();
+				System::String^ _remoteIP2 = dataGridView1->Rows[playingSongIndex]->Cells[11]->Value->ToString();
+				System::String^ _port2 = dataGridView1->Rows[playingSongIndex]->Cells[12]->Value->ToString();
+				System::String^ _path1 = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
+				System::String^ _path2 = dataGridView1->Rows[playingSongIndex]->Cells[13]->Value->ToString();
+				string remoteIP1, port1, remoteIP2, port2, path1, path2;
+				MarshalString(_remoteIP1, remoteIP1);
+				MarshalString(_port1, port1);
+				MarshalString(_remoteIP2, remoteIP2);
+				MarshalString(_port2, port2);
+				MarshalString(_path1, path1);
+				MarshalString(_path2, path2);
+
+				swprintf_s(buf, 100, L"path of remote sogns:\n ");
+				OutputDebugString(buf);
+				swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP1.c_str(), stoi(port1), path1.c_str());
+				OutputDebugString(buf);
+				swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP2.c_str(), stoi(port2), path2.c_str());
+				OutputDebugString(buf);
+
+				//s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
+				s_SetStreamSrcInfo((char*)remoteIP1.c_str(), stoi(port1), (char*)path1.c_str(), (char*)remoteIP2.c_str(), stoi(port2), (char*)path2.c_str());
+				s_Playback(0);
+			}
+			else {
+				System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
+				string songPath;
+				MarshalString(selectedSongPath, songPath);
+
+				SelectMusic(songPath.c_str()); // convert string to char*
+			}
+				
 			playing = 1;
 
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
@@ -1039,14 +1217,50 @@ private: System::ComponentModel::IContainer^  components;
 	}
 
 	private: System::Void Previous_Click(System::Object^  sender, System::EventArgs^  e) {
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+
 		if (playingSongIndex != 0) {
 			playingSongIndex--;
+			if (String::Compare(selectedPlayMode, "Stream") == 0) {
 
-			System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
-			string songPath;
-			MarshalString(selectedSongPath, songPath);
+				wchar_t buf[100];
+				swprintf_s(buf, 100, L"This song is played in streaming mode\n");
+				OutputDebugString(buf);
 
-			SelectMusic(songPath.c_str()); // convert string to char*
+				System::String^ _remoteIP1 = dataGridView1->Rows[playingSongIndex]->Cells[9]->Value->ToString();
+				System::String^ _port1 = dataGridView1->Rows[playingSongIndex]->Cells[10]->Value->ToString();
+				System::String^ _remoteIP2 = dataGridView1->Rows[playingSongIndex]->Cells[11]->Value->ToString();
+				System::String^ _port2 = dataGridView1->Rows[playingSongIndex]->Cells[12]->Value->ToString();
+				System::String^ _path1 = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
+				System::String^ _path2 = dataGridView1->Rows[playingSongIndex]->Cells[13]->Value->ToString();
+				string remoteIP1, port1, remoteIP2, port2, path1, path2;
+				MarshalString(_remoteIP1, remoteIP1);
+				MarshalString(_port1, port1);
+				MarshalString(_remoteIP2, remoteIP2);
+				MarshalString(_port2, port2);
+				MarshalString(_path1, path1);
+				MarshalString(_path2, path2);
+
+				swprintf_s(buf, 100, L"path of remote sogns:\n ");
+				OutputDebugString(buf);
+				swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP1.c_str(), stoi(port1), path1.c_str());
+				OutputDebugString(buf);
+				swprintf_s(buf, 100, L"%s, %d, %s\n ", remoteIP2.c_str(), stoi(port2), path2.c_str());
+				OutputDebugString(buf);
+
+				//s_SetStreamSrcInfo(char* server1_ip, int port1, char* path1, char* server2_ip, int port2, char* path2);
+				s_SetStreamSrcInfo((char*)remoteIP1.c_str(), stoi(port1), (char*)path1.c_str(), (char*)remoteIP2.c_str(), stoi(port2), (char*)path2.c_str());
+				s_Playback(0);
+			}
+			else {
+				System::String^ selectedSongPath = dataGridView1->Rows[playingSongIndex]->Cells[5]->Value->ToString();
+				string songPath;
+				MarshalString(selectedSongPath, songPath);
+
+				SelectMusic(songPath.c_str()); // convert string to char*
+			}
+			
 			playing = 1;
 
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
@@ -1055,11 +1269,14 @@ private: System::ComponentModel::IContainer^  components;
 			dataGridView1->CurrentCell = dataGridView1->Rows[playingSongIndex]->Cells[0];
 
 			updateSongInfo();
-		}		
+		}
 	}
 
 	private: void updateSongInfo() {
 		timer1->Stop();
+
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
 
 		System::String^ selectedSongTitle;
 		selectedSongTitle = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[0]->Value->ToString();
@@ -1070,7 +1287,14 @@ private: System::ComponentModel::IContainer^  components;
 		label2->Text = selectedSongArtist;
 
 		//update song length
-		int selectedSongDuration = GetTotalDuration() / 1000;
+		int selectedSongDuration;
+		if (String::Compare(selectedPlayMode, "Stream") == 0) {
+			selectedSongDuration = GetTotalDuration() / 1000;
+		}
+		else {
+			selectedSongDuration = GetTotalDuration() / 1000;
+		}
+		
 		int minute = selectedSongDuration / 60;
 		int second = selectedSongDuration % 60;
 		string divider = ":";
@@ -1157,7 +1381,7 @@ private: System::ComponentModel::IContainer^  components;
 				textBox1->Visible = true;
 			}
 		}
-
+		
 		timer1->Start();
 	}
 
@@ -1252,7 +1476,7 @@ private: System::ComponentModel::IContainer^  components;
 				// Display Table
 				for (int rowCtr = 0; rowCtr <= rows; ++rowCtr)
 				{
-					string songBuffer[14];
+					string songBuffer[15];
 					int index = 0;
 					int rowIndex = 0;
 					if (rowCtr != 0) {
@@ -1274,7 +1498,7 @@ private: System::ComponentModel::IContainer^  components;
 						swprintf_s(buf, 100, L"%s ", songBuffer[index].c_str());
 						OutputDebugString(buf);
 
-						if (index >= 1 && index <= 13 && rowCtr != 0) {
+						if (index >= 1 && index <= 14 && rowCtr != 0) {
 							System::String^ strNew = gcnew String(songBuffer[index].c_str());
 							dataGridView1->Rows[rowIndex]->Cells[index - 1]->Value = strNew;
 						}
@@ -1524,6 +1748,7 @@ private: System::ComponentModel::IContainer^  components;
 							dataGridView1->Rows[rowIndex]->Cells[10]->Value = strPort1;
 							dataGridView1->Rows[rowIndex]->Cells[11]->Value = "-";
 							dataGridView1->Rows[rowIndex]->Cells[12]->Value = "-";
+							dataGridView1->Rows[rowIndex]->Cells[13]->Value = "-";
 						}
 
 						wchar_t buf[100];
@@ -1689,6 +1914,7 @@ private: System::ComponentModel::IContainer^  components;
 							dataGridView1->Rows[rowIndex]->Cells[10]->Value = strPort2;
 							dataGridView1->Rows[rowIndex]->Cells[11]->Value = "-";
 							dataGridView1->Rows[rowIndex]->Cells[12]->Value = "-";
+							dataGridView1->Rows[rowIndex]->Cells[13]->Value = "-";
 						}
 
 						wchar_t buf[100];
@@ -1740,6 +1966,7 @@ private: System::ComponentModel::IContainer^  components;
 							if (String::Compare(checksumStr, remoteChecksumStr) == 0) {
 								dataGridView1->Rows[i + localRows]->Cells[11]->Value = dataGridView1->Rows[rowIndex]->Cells[9]->Value->ToString();
 								dataGridView1->Rows[i + localRows]->Cells[12]->Value = dataGridView1->Rows[rowIndex]->Cells[10]->Value->ToString();
+								dataGridView1->Rows[i + localRows]->Cells[13]->Value = dataGridView1->Rows[rowIndex]->Cells[5]->Value->ToString();
 								dataGridView1->Rows->Remove(dataGridView1->Rows[rowIndex]);
 								swprintf_s(buf, 100, L"Checksums of these two rows are the same: %d & %d\n ", i + localRows, rowIndex);
 								OutputDebugString(buf);
@@ -1789,7 +2016,8 @@ private: System::ComponentModel::IContainer^  components;
 				remoteIP1  VARCHAR(20)  NOT NULL, \
 				port1      INTEGER, \
 				remoteIP2  VARCHAR(20), \
-				port2      INTEGER);";
+				port2      INTEGER \
+				songPath2  VARCHAR(255));";
 			rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
 
 			//clear all old datum
@@ -1800,7 +2028,7 @@ private: System::ComponentModel::IContainer^  components;
 
 			//insert each datum
 			string title, artist, album, duration, location, songPath, lyricsPath, imagePath;
-			string checksum, remoteIP1, remoteIP2, port1, port2;
+			string checksum, remoteIP1, remoteIP2, port1, port2, songPath2;
 			for (int i = 0; i < dataGridView1->Rows->Count; i++) {
 				System::String^ _title = dataGridView1->Rows[i]->Cells[0]->Value->ToString();
 				System::String^ _artist = dataGridView1->Rows[i]->Cells[1]->Value->ToString();
@@ -1815,6 +2043,7 @@ private: System::ComponentModel::IContainer^  components;
 				System::String^ _port1 = dataGridView1->Rows[i]->Cells[10]->Value->ToString();
 				System::String^ _remoteIP2 = dataGridView1->Rows[i]->Cells[11]->Value->ToString();
 				System::String^ _port2 = dataGridView1->Rows[i]->Cells[12]->Value->ToString();
+				System::String^ _songPath2 = dataGridView1->Rows[i]->Cells[13]->Value->ToString();
 
 				MarshalString(_title, title);
 				MarshalString(_artist, artist);
@@ -1829,12 +2058,13 @@ private: System::ComponentModel::IContainer^  components;
 				MarshalString(_remoteIP2, remoteIP2);
 				MarshalString(_port1, port1);
 				MarshalString(_port2, port2);
+				MarshalString(_songPath2, songPath2);
 
 				string fullPara;
 				fullPara = "INSERT INTO Song VALUES (NULL, '" + title + "', '" + artist + "', '" + album + "', '"
 					+ duration + "', '" + location + "', '" + songPath + "', '" + lyricsPath + "', '"
 					+ imagePath + "', '" + checksum + "', '" + remoteIP1 + "', '" + port1 + "', '"
-					+ remoteIP2 + "', '" + port2 + "');'"; //for now, there is no such field in songDB.db
+					+ remoteIP2 + "', '" + port2 + "', '" + songPath2 + "');'"; //for now, there is no such field in songDB.db
 														   //+ "-" + "', '" + "-" + "');'";
 				sql = fullPara.c_str();
 				rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
@@ -1855,8 +2085,18 @@ private: System::ComponentModel::IContainer^  components;
 	//this timer ticks every 1 second
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
+		System::String^ selectedPlayMode;
+		selectedPlayMode = dataGridView1->Rows[dataGridView1->SelectedCells[0]->RowIndex]->Cells[4]->Value->ToString();
+
+		int timeNow = 0;
+		if (String::Compare(selectedPlayMode, "Stream") == 0) {
+			
+			timeNow = GetCurrentPlaybackTime() / 1000;
+		}
+		else {
+			timeNow= GetCurrentPlaybackTime() / 1000;
+		}
 		//Update time now label
-		int timeNow = GetCurrentPlaybackTime() / 1000;
 		int minute = timeNow / 60;
 		int second = timeNow % 60;
 
